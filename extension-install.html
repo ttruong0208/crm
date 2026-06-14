@@ -18,7 +18,8 @@
         <div class="brand-mark" aria-hidden="true">Z</div>
         <div><h1>Zalo Campaign CRM</h1></div>
       </a>
-      <a href="/app.html" class="secondary landing-btn">← Vào CRM</a>
+      <a href="/login.html" class="secondary landing-btn" data-auth-guest>← Đăng nhập</a>
+      <a href="/app.html" class="btn-primary landing-btn hidden" data-auth-user>← Vào CRM</a>
     </header>
 
     <main class="login-page-main">
@@ -27,11 +28,13 @@
         <p class="login-sub">Cần để quét nhóm Zalo Web và gửi tin <strong>Gửi Web</strong> trong chiến dịch.</p>
         <div data-extension-banner id="extension-banner-page"></div>
         <p class="item-meta register-footnote">
-          <a href="/">Trang chủ</a> · <a href="/login.html">Đăng nhập</a> · <a href="/register.html">Đăng ký</a>
+          <a href="/">Trang chủ</a> · <a href="/app.html" data-auth-user class="hidden">Vào CRM</a><span data-auth-user class="hidden"> · </span><a href="/login.html" data-auth-guest>Đăng nhập</a><span data-auth-guest> · </span><a href="/register.html" data-auth-guest>Đăng ký</a>
         </p>
       </section>
     </main>
 
     <script src="/extension-install.js"></script>
+    <script src="/auth-shared.js"></script>
+    <script src="/auth-nav.js"></script>
   </body>
 </html>

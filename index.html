@@ -29,8 +29,13 @@
         <a href="#bai-viet">Bài viết</a>
         <a href="#faq">FAQ</a>
       </nav>
-      <a href="/register.html" class="btn-primary landing-btn">Đăng ký</a>
-      <a href="/login.html" class="secondary landing-btn">Đăng nhập</a>
+      <a href="/register.html" class="btn-primary landing-btn" data-auth-guest>Đăng ký</a>
+      <a href="/login.html" class="secondary landing-btn" data-auth-guest>Đăng nhập</a>
+      <span class="auth-nav-user-chip hidden" data-auth-user title="Đang đăng nhập">
+        <span data-auth-user-name></span>
+      </span>
+      <a href="/app.html" class="btn-primary landing-btn hidden" data-auth-user>Vào CRM</a>
+      <button type="button" class="secondary landing-btn hidden" data-auth-user data-auth-logout>Đăng xuất</button>
       <button type="button" class="secondary landing-btn" data-download-guide>📖 Hướng dẫn PDF</button>
     </header>
 
@@ -44,7 +49,8 @@
             An toàn tài khoản, phù hợp shop &amp; agency chạy inbox nhóm thủ công.
           </p>
           <div class="landing-cta">
-            <a href="/register.html" class="btn-primary landing-btn">Đăng ký miễn phí</a>
+            <a href="/register.html" class="btn-primary landing-btn" data-auth-guest>Đăng ký miễn phí</a>
+            <a href="/app.html" class="btn-primary landing-btn hidden" data-auth-user>Vào CRM</a>
             <a href="/pricing.html" class="secondary landing-btn">Xem bảng giá 300 · 600 · 900k</a>
             <a
               href="/downloads/zalo-crm-extension.zip"
@@ -419,7 +425,8 @@
           <h2>Sẵn sàng quản lý chiến dịch Zalo có hệ thống?</h2>
           <p>Đăng nhập demo hoặc liên hệ triển khai cho team của bạn.</p>
           <div class="landing-cta">
-            <a href="/login.html" class="btn-primary landing-btn">Dùng thử miễn phí (demo)</a>
+            <a href="/login.html" class="btn-primary landing-btn" data-auth-guest>Dùng thử miễn phí (demo)</a>
+            <a href="/app.html" class="btn-primary landing-btn hidden" data-auth-user>Vào CRM</a>
             <a href="mailto:support@example.com" class="secondary landing-btn">Liên hệ tư vấn</a>
           </div>
         </div>
@@ -433,11 +440,12 @@
           </div>
           <div class="footer-col">
             <h4>Sản phẩm</h4>
-            <a href="/login.html">Đăng nhập</a>
+            <a href="/login.html" data-auth-guest>Đăng nhập</a>
+            <a href="/app.html" class="hidden" data-auth-user>Vào CRM</a>
             <a href="/pricing.html">Bảng giá</a>
             <a href="#bai-viet">Bài viết</a>
             <a href="#faq">FAQ</a>
-            <a href="/login.html">Dùng thử demo</a>
+            <a href="/login.html" data-auth-guest>Dùng thử demo</a>
           </div>
           <div class="footer-col">
             <h4>Tính năng</h4>
@@ -472,6 +480,8 @@
     </main>
 
     <script src="./guide-download.js"></script>
+    <script src="./auth-shared.js"></script>
+    <script src="./auth-nav.js"></script>
     <script src="./extension-install.js"></script>
     <script src="./landing.js"></script>
   </body>

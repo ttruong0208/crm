@@ -181,6 +181,26 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
+.auth-nav-user-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 220px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-landing .auth-nav-user-chip {
+  margin-right: 4px;
+}
+
 .login-page-main {
   min-height: calc(100vh - 72px);
   display: flex;

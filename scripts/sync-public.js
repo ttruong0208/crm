@@ -15,6 +15,7 @@ const rootFiles = [
   "pricing.html",
   "styles.css",
   "auth-shared.js",
+  "auth-nav.js",
   "login.js",
   "register.js",
   "verify-email.js",

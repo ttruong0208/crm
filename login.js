@@ -37,18 +37,6 @@ async function initLoginPage() {
   loginForm?.addEventListener("submit", handleLoginSubmit);
 }
 
-async function fetchCurrentUser() {
-  if (!getAccessToken()) return null;
-  try {
-    const response = await apiFetch("/api/me");
-    if (!response.ok) return null;
-    const payload = await response.json();
-    return payload.user || null;
-  } catch {
-    return null;
-  }
-}
-
 async function handleLoginSubmit(event) {
   event.preventDefault();
   loginError?.classList.add("hidden");

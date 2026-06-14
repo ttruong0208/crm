@@ -12,7 +12,8 @@
         <div class="brand-mark" aria-hidden="true">Z</div>
         <div><h1>Zalo Campaign CRM</h1></div>
       </a>
-      <a href="/login.html" class="secondary landing-btn">← Đăng nhập</a>
+      <a href="/login.html" class="secondary landing-btn" data-auth-guest>← Đăng nhập</a>
+      <a href="/app.html" class="btn-primary landing-btn hidden" data-auth-user>Vào CRM</a>
     </header>
     <main class="login-page-main">
       <section class="login-card">
@@ -47,6 +48,8 @@
         </p>
       </section>
     </main>
+    <script src="./auth-shared.js"></script>
     <script src="./verify-email.js"></script>
+    <script src="./auth-nav.js"></script>
   </body>
 </html>

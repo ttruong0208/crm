@@ -20,9 +20,12 @@
           <h1>Zalo Campaign CRM</h1>
         </div>
       </a>
-      <a href="/register.html" class="btn-primary landing-btn">Đăng ký FREE</a>
+      <a href="/register.html" class="btn-primary landing-btn" data-auth-guest>Đăng ký FREE</a>
       <a href="/pricing.html" class="secondary landing-btn">Bảng giá</a>
       <a href="/" class="secondary landing-btn">← Trang chủ</a>
+      <span class="auth-nav-user-chip hidden" data-auth-user><span data-auth-user-name></span></span>
+      <a href="/app.html" class="btn-primary landing-btn hidden" data-auth-user>Vào CRM</a>
+      <button type="button" class="secondary landing-btn hidden" data-auth-user data-auth-logout>Đăng xuất</button>
       <button type="button" class="secondary landing-btn" data-download-guide>📖 Tải hướng dẫn PDF</button>
     </header>
 
@@ -57,6 +60,7 @@
 
     <script src="./guide-download.js"></script>
     <script src="./auth-shared.js"></script>
+    <script src="./auth-nav.js"></script>
     <script src="./login.js"></script>
   </body>
 </html>

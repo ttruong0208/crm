@@ -27,7 +27,11 @@
         <a href="/#tinh-nang">Tính năng</a>
         <a href="/#faq">FAQ</a>
       </nav>
-      <a href="/login.html" class="btn-primary landing-btn">Đăng nhập</a>
+      <a href="/register.html" class="btn-primary landing-btn" data-auth-guest>Đăng ký FREE</a>
+      <a href="/login.html" class="secondary landing-btn" data-auth-guest>Đăng nhập</a>
+      <span class="auth-nav-user-chip hidden" data-auth-user><span data-auth-user-name></span></span>
+      <a href="/app.html" class="btn-primary landing-btn hidden" data-auth-user>Vào CRM</a>
+      <button type="button" class="secondary landing-btn hidden" data-auth-user data-auth-logout>Đăng xuất</button>
       <button type="button" class="secondary landing-btn" data-download-guide>📖 Hướng dẫn PDF</button>
     </header>
 
@@ -292,5 +296,7 @@
     </main>
 
     <script src="./guide-download.js"></script>
+    <script src="./auth-shared.js"></script>
+    <script src="./auth-nav.js"></script>
   </body>
 </html>

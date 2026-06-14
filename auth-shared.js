@@ -136,3 +136,23 @@ async function apiFetch(url, options = {}) {
 
   return response;
 }
+
+async function fetchCurrentUser() {
+  if (!getAccessToken()) return null;
+  try {
+    const response = await apiFetch("/api/me");
+    if (!response.ok) {
+      if (response.status === 401) clearAuthTokens();
+      return null;
+    }
+    const payload = await response.json();
+    return payload.user || null;
+  } catch {
+    return null;
+  }
+}
+
+function logoutUser(redirectTo = "/") {
+  clearAuthTokens();
+  window.location.href = redirectTo;
+}
