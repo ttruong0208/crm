@@ -8,7 +8,7 @@
     "api/index.js": {
       "maxDuration": 30,
       "memory": 1024,
-      "includeFiles": "*.html,*.css,*.js,assets/**,docs/**,tools/**"
+      "includeFiles": "index.html,login.html,register.html,app.html,pricing.html,verify-email.html,styles.css,auth-shared.js,login.js,register.js,verify-email.js,app.js,plan-ui.js,users-ui.js,landing.js,guide-download.js,group-import-client.js,group-import-wizard.js,crm-full-ui.js,crm-inbox-ui.js,zalo-links.js,assets/**,docs/**,tools/**"
     }
   }
 }

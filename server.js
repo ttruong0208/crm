@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 const {
   initDb,
@@ -146,6 +147,32 @@ async function buildCustomerSummaries(currentUserId) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+function resolvePublicRoot() {
+  const candidates = [__dirname, path.join(__dirname, ".."), process.cwd()];
+  for (const dir of candidates) {
+    try {
+      if (fs.existsSync(path.join(dir, "index.html"))) return dir;
+    } catch {
+      // ignore
+    }
+  }
+  return __dirname;
+}
+
+const PUBLIC_ROOT = resolvePublicRoot();
+
+function resolvePublicFile(urlPath) {
+  const rel = urlPath === "/" ? "index.html" : String(urlPath || "").replace(/^\//, "");
+  if (!rel || rel.includes("..")) return null;
+  const filePath = path.join(PUBLIC_ROOT, rel);
+  try {
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) return filePath;
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 async function pushCrmWebhook(state, event, data) {
   const url = state.crmSettings?.webhookUrl;
   const secret = state.crmSettings?.webhookSecret;
@@ -163,7 +190,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json({ limit: "2mb" }));
-app.use(express.static(__dirname));
+app.use(express.static(PUBLIC_ROOT));
 
 let bootstrapPromise = null;
 async function ensureBootstrapped() {
@@ -1288,8 +1315,13 @@ app.get("/api/docs/huong-dan.pdf", async (_req, res) => {
 
 app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api")) return next();
-  const indexPath = path.join(__dirname, "index.html");
-  res.sendFile(indexPath, (err) => {
+  const filePath = resolvePublicFile(req.path);
+  if (filePath) {
+    return res.sendFile(filePath, (err) => {
+      if (err) next(err);
+    });
+  }
+  return res.sendFile(path.join(PUBLIC_ROOT, "index.html"), (err) => {
     if (err) next(err);
   });
 });
