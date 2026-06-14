@@ -486,11 +486,11 @@ app.post("/api/register", async (req, res) => {
     await saveAppState(username, newState);
 
     const user = await findUserById(userId);
-    const mailResult = await sendUserVerificationEmail(user);
+    const mailResult = await sendUserVerificationEmail(user, { waitForDelivery: false });
 
     const response = {
       ok: true,
-      message: "Đăng ký thành công. Nhập mã 6 số đã gửi tới email để xác minh.",
+      message: "Đăng ký thành công. Kiểm tra email để lấy mã 6 số (có thể mất vài giây).",
       email,
       needsVerification: true,
       verifyUrl: `/verify-email.html?email=${encodeURIComponent(email)}`,
@@ -545,7 +545,7 @@ app.post("/api/auth/resend-verification", async (req, res) => {
       return res.json({ ok: true, message: "Email đã xác minh. Bạn có thể đăng nhập." });
     }
 
-    const mailResult = await sendUserVerificationEmail(user);
+    const mailResult = await sendUserVerificationEmail(user, { waitForDelivery: false });
     const response = {
       ok: true,
       message: "Đã gửi mã xác minh mới tới email.",
