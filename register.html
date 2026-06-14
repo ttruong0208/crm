@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký FREE · Zalo Campaign CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="login" class="page-login">
+    <header class="topbar topbar-minimal">
+      <a href="/" class="brand brand-link">
+        <div class="brand-mark" aria-hidden="true">Z</div>
+        <div><h1>Zalo Campaign CRM</h1></div>
+      </a>
+      <a href="/pricing.html" class="secondary landing-btn">Bảng giá</a>
+      <a href="/login.html" class="secondary landing-btn">← Đăng nhập</a>
+    </header>
+
+    <main class="login-page-main">
+      <section class="login-card" id="register-card">
+        <h2>Đăng ký FREE 1 ngày</h2>
+        <p class="login-sub">Email + mật khẩu → nhận mã 6 số qua email → nhập mã xác minh</p>
+
+        <div class="free-trial-box">
+          <strong>Trong 1 ngày FREE được:</strong>
+          <ul>
+            <li>Tối đa <strong>10 nhóm</strong> Zalo</li>
+            <li><strong>1 tài khoản</strong> · Gửi Web + công việc + Inbox</li>
+            <li>Không broadcast · không file đính kèm · không thêm user</li>
+          </ul>
+          <p class="item-meta">Hết 24h → nâng gói 300k / 600k / 900k để tiếp tục.</p>
+        </div>
+
+        <p id="register-error" class="login-error hidden" role="alert"></p>
+        <form id="register-form" class="stack">
+          <label class="field">
+            <span>Email</span>
+            <input id="register-email" type="email" placeholder="ban@congty.com" required autocomplete="email" />
+          </label>
+          <label class="field">
+            <span>Mật khẩu</span>
+            <input id="register-password" type="password" minlength="6" required autocomplete="new-password" />
+          </label>
+          <label class="field">
+            <span>Nhập lại mật khẩu</span>
+            <input id="register-password2" type="password" minlength="6" required autocomplete="new-password" />
+          </label>
+          <button type="submit" class="btn-primary">Đăng ký FREE</button>
+        </form>
+        <p class="item-meta register-footnote">
+          Đã có tài khoản? <a href="/login.html">Đăng nhập</a>
+        </p>
+      </section>
+    </main>
+
+    <script src="./register.js"></script>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font: 13px Inter, sans-serif;
+        margin: 12px;
+        width: 300px;
+      }
+      label {
+        display: block;
+        font-size: 11px;
+        color: #64748b;
+        margin: 8px 0 4px;
+      }
+      input[type="text"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px;
+      }
+      button {
+        margin-top: 8px;
+        padding: 8px 12px;
+        width: 100%;
+        cursor: pointer;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+      }
+      #scan-btn {
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        font-weight: 600;
+      }
+      #scan-btn:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+      .ok {
+        color: #16a34a;
+        font-size: 12px;
+        margin-top: 8px;
+      }
+      .err {
+        color: #dc2626;
+        font-size: 12px;
+        margin-top: 8px;
+      }
+      .hint {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 10px;
+        line-height: 1.45;
+      }
+      ol {
+        margin: 8px 0 0;
+        padding-left: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <strong>Zalo CRM</strong>
+    <label>URL CRM</label>
+    <input id="crm-url" type="text" value="http://localhost:3000" />
+    <label>Mã đồng bộ</label>
+    <input id="sync-token" type="text" placeholder="Copy từ CRM" />
+    <label><input type="checkbox" id="enabled" checked /> Tự đánh dấu đã gửi khi gửi tin</label>
+    <button id="save">① Lưu cấu hình</button>
+    <button id="open-zalo" type="button">② Mở chat.zalo.me</button>
+    <button id="scan-btn" type="button">③ Quét nhóm → gửi CRM</button>
+    <p class="hint">
+      <strong>Sau khi Lưu:</strong> bấm <strong>Mở Zalo</strong> → bấm <strong>Quét nhóm</strong> (tab Zalo phải đang mở).
+      <br />Quay CRM → Import → <strong>Hiện nhóm vừa quét từ Zalo</strong> → Import.
+    </p>
+    <p id="msg"></p>
+    <script src="popup.js"></script>
+  </body>
+</html>

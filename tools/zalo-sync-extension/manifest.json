@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Zalo CRM — Quét nhóm & đồng bộ",
+  "version": "1.7.0",
+  "description": "Quét danh sách nhóm từ chat.zalo.me vào CRM; tự đánh dấu Đã gửi khi gửi tin.",
+  "permissions": ["storage", "tabs", "scripting"],
+  "background": { "service_worker": "background.js" },
+  "host_permissions": ["https://chat.zalo.me/*", "https://*.zalo.me/*", "http://localhost:*/*", "http://127.0.0.1:*/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://chat.zalo.me/*", "https://*.zalo.me/*"],
+      "js": ["zalo-webpack.js", "page-debug.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://chat.zalo.me/*", "https://*.zalo.me/*"],
+      "js": ["zalo-webpack.js", "zalo-sync-core.js", "content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://localhost:*/*", "http://127.0.0.1:*/*"],
+      "js": ["crm-bridge.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Zalo CRM Sync",
+    "default_popup": "popup.html"
+  }
+}

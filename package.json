@@ -1,0 +1,28 @@
+{
+  "name": "zalo-crm-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zalo campaign CRM MVP with frontend + backend API.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:init": "node scripts/init-db.js",
+    "db:migrate-json": "node scripts/migrate-from-json.js",
+    "docs:pdf": "node scripts/generate-pdf-kit.js",
+    "docs:guide-pdf": "node -e \"require('./lib/generateGuidePdf').generateGuidePdf().then(p=>console.log('OK',p)).catch(e=>{console.error(e);process.exit(1)})\"",
+    "prod:up": "docker compose -f docker-compose.prod.yml up -d --build",
+    "prod:down": "docker compose -f docker-compose.prod.yml down",
+    "backup:db": "powershell -ExecutionPolicy Bypass -File scripts/backup-db.ps1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.16",
+    "pdfkit": "^0.15.0",
+    "pg": "^8.12.0"
+  }
+}

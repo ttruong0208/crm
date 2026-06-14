@@ -1,0 +1,36 @@
+# --- Secrets (KHÔNG BAO GIỜ push) ---
+.env
+.env.*
+!.env.example
+
+# --- Dependencies ---
+node_modules/
+
+# --- Dữ liệu runtime / khách hàng ---
+data/
+backups/
+db.json
+
+# --- Log & hệ điều hành ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- IDE / tool tạm ---
+.cursor/
+.idea/
+*.swp
+*~
+
+# --- File probe / script tạm ---
+_EXEC_REPORT.txt
+git-test-output.txt
+shell-probe.txt
+_git_diag.txt
+
+# --- PDF sinh lúc chạy server (có thể tái tạo) ---
+docs/Huong-dan-su-dung.pdf

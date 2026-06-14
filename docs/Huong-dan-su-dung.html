@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hướng dẫn sử dụng · Zalo Campaign CRM</title>
+    <style>
+      :root {
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --blue: #0068ff;
+        --green: #059669;
+        --amber: #d97706;
+        --bg: #f8fafc;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        line-height: 1.65;
+        color: var(--text);
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+        background: var(--bg);
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin: 0 0 8px;
+        color: var(--blue);
+      }
+      .lead {
+        color: var(--muted);
+        margin: 0 0 28px;
+        font-size: 1.05rem;
+      }
+      h2 {
+        font-size: 1.2rem;
+        margin: 36px 0 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--blue);
+      }
+      h3 {
+        font-size: 1rem;
+        margin: 24px 0 8px;
+        color: #1e40af;
+      }
+      p,
+      li {
+        font-size: 0.95rem;
+      }
+      ul,
+      ol {
+        padding-left: 1.35rem;
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      .box {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin: 16px 0;
+      }
+      .box--info {
+        border-left: 4px solid var(--blue);
+        background: #eff6ff;
+      }
+      .box--warn {
+        border-left: 4px solid var(--amber);
+        background: #fffbeb;
+      }
+      .box--ok {
+        border-left: 4px solid var(--green);
+        background: #ecfdf5;
+      }
+      .steps {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .steps li {
+        counter-increment: step;
+        position: relative;
+        padding: 12px 12px 12px 48px;
+        margin-bottom: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      .steps li::before {
+        content: counter(step);
+        position: absolute;
+        left: 14px;
+        top: 12px;
+        width: 24px;
+        height: 24px;
+        background: var(--blue);
+        color: #fff;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        background: #fff;
+        margin: 12px 0;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 10px 12px;
+        text-align: left;
+      }
+      th {
+        background: #f1f5f9;
+      }
+      code,
+      kbd {
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.88em;
+      }
+      .toc a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+      .toc a:hover {
+        text-decoration: underline;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li::before {
+        content: "☐ ";
+        font-weight: bold;
+      }
+      @media print {
+        body {
+          background: #fff;
+          padding: 16px;
+        }
+        .box {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hướng dẫn sử dụng Zalo Campaign CRM</h1>
+    <p class="lead">
+      Tài liệu dành cho team vận hành: quản lý ~300 nhóm Zalo, mỗi nhóm một nội dung riêng, theo dõi đã gửi /
+      follow-up, thỉnh thoảng gửi thông báo chung nhiều nhóm.
+    </p>
+
+    <div class="box box--info">
+      <strong>CRM làm gì:</strong> Soạn tin, phân việc, theo dõi trạng thái, báo cáo.<br />
+      <strong>CRM không làm gì:</strong> Không thay Zalo, không tự gửi 1000 tin/ngày kiểu bot (tin vẫn do người
+      gửi trên Zalo Web hoặc app Zalo).
+    </div>
+
+    <h2>Mục lục</h2>
+    <ol class="toc">
+      <li><a href="#chuan-bi">Chuẩn bị &amp; đăng nhập</a></li>
+      <li><a href="#extension">Cài extension Chrome</a></li>
+      <li><a href="#workflow">Quy trình 3 bước (bắt buộc đọc)</a></li>
+      <li><a href="#menu">Từng menu trong CRM</a></li>
+      <li><a href="#gui-tin">Gửi tin hàng ngày (Công việc)</a></li>
+      <li><a href="#broadcast">Thông báo hàng loạt</a></li>
+      <li><a href="#file">File đính kèm</a></li>
+      <li><a href="#phan-quyen">Phân quyền</a></li>
+      <li><a href="#loi">Lỗi thường gặp</a></li>
+      <li><a href="#checklist">Checklist kiểm tra</a></li>
+    </ol>
+
+    <h2 id="chuan-bi">1. Chuẩn bị &amp; đăng nhập</h2>
+
+    <h3>Chạy CRM trên máy</h3>
+    <ol>
+      <li>Mở terminal trong thư mục <code>zalo-crm-mvp</code></li>
+      <li>Chạy: <code>npm.cmd start</code></li>
+      <li>Mở trình duyệt: <a href="http://localhost:3000/login.html">http://localhost:3000/login.html</a></li>
+    </ol>
+
+    <h3>Tài khoản demo</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Vai trò</th>
+          <th>User</th>
+          <th>Mật khẩu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Admin (full quyền)</td>
+          <td><code>admin</code></td>
+          <td><code>admin123</code></td>
+        </tr>
+        <tr>
+          <td>Người soạn tin</td>
+          <td><code>editor</code></td>
+          <td><code>editor123</code></td>
+        </tr>
+        <tr>
+          <td>Người trả lời</td>
+          <td><code>responder</code></td>
+          <td><code>responder123</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="box box--warn">
+      Trên Windows nếu lỗi <code>npm</code>, dùng <code>npm.cmd</code> thay cho <code>npm</code>.
+    </div>
+
+    <h2 id="extension">2. Cài extension Chrome (một lần)</h2>
+    <ol class="steps">
+      <li>
+        Chrome → <strong>Extensions</strong> → bật <strong>Developer mode</strong> →
+        <strong>Load unpacked</strong> → chọn thư mục <code>tools/zalo-sync-extension</code>
+      </li>
+      <li>
+        CRM → menu <strong>Đồng bộ Zalo</strong> → bấm <strong>Tạo / làm mới mã đồng bộ</strong> (Admin) → F5 trang
+        CRM
+      </li>
+      <li>
+        Mở tab <a href="https://chat.zalo.me/">chat.zalo.me</a> → đăng nhập Zalo → giữ tab này mở khi dùng
+        <strong>Gửi Web</strong>
+      </li>
+      <li>Sau khi cập nhật extension, bấm <strong>Reload</strong> extension rồi F5 CRM + F5 chat.zalo.me</li>
+    </ol>
+
+    <h2 id="workflow">3. Quy trình 3 bước (làm theo thứ tự)</h2>
+
+    <div class="box box--ok">
+      <strong>Bước 1 — Import nhóm</strong> (menu <em>Nhóm &amp; chiến dịch</em>)<br />
+      Extension quét Zalo → CRM import danh sách nhóm vào hệ thống.
+    </div>
+    <div class="box box--ok">
+      <strong>Bước 2 — Tạo chiến dịch</strong> (cùng trang, cột phải)<br />
+      Mỗi đợt gửi tin = một chiến dịch (VD: «Tháng 5 — chăm sóc khách»).
+    </div>
+    <div class="box box--ok">
+      <strong>Bước 3 — Soạn &amp; gửi</strong> (menu <em>Công việc</em>)<br />
+      Chọn chiến dịch → soạn tin từng nhóm → <strong>Gửi Web</strong> hoặc gửi tay trên Zalo → đổi trạng thái
+      <strong>Đã gửi</strong>.
+    </div>
+
+    <h3>Import nhóm từ Zalo (chi tiết)</h3>
+    <ol>
+      <li>Menu <strong>Nhóm &amp; chiến dịch</strong> → bấm nút xanh <strong>Import nhóm từ Zalo / CSV</strong></li>
+      <li>Trên chat.zalo.me: extension popup → <strong>Quét nhóm → gửi CRM</strong> (đợi 1–3 phút nếu nhiều nhóm)</li>
+      <li>Quay CRM → <strong>Hiện danh sách vừa quét</strong> → chọn <strong>Chỉ import: Nhóm Zalo</strong></li>
+      <li>Bấm <strong>Import vào CRM</strong></li>
+    </ol>
+
+    <div class="box box--info">
+      <strong>Tìm nhóm:</strong> Dùng ô <strong>Tìm tên nhóm, người phụ trách…</strong> (viền xanh).<br />
+      <strong>Không dùng</strong> ô «Thêm nhóm thủ công» để tìm — ô đó chỉ để thêm nhóm mới bằng tay.
+    </div>
+
+    <h2 id="menu">4. Từng menu trong CRM</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Menu</th>
+          <th>Dùng khi nào</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Công việc</strong></td>
+          <td>Hàng ngày: soạn tin, Gửi Web, đổi trạng thái, follow-up</td>
+        </tr>
+        <tr>
+          <td><strong>Nhóm &amp; chiến dịch</strong></td>
+          <td>Import nhóm, tạo chiến dịch, tìm nhóm</td>
+        </tr>
+        <tr>
+          <td><strong>Tổng quan</strong></td>
+          <td>Xem số liệu: chưa gửi, đã gửi, quá hạn follow-up</td>
+        </tr>
+        <tr>
+          <td><strong>Thông báo</strong></td>
+          <td>Thỉnh thoảng: 1 nội dung gửi nhiều nhóm (không giới hạn ~100 nhóm)</td>
+        </tr>
+        <tr>
+          <td><strong>Đồng bộ Zalo</strong></td>
+          <td>Tạo mã sync, kiểm tra extension online/offline</td>
+        </tr>
+        <tr>
+          <td><strong>Inbox</strong></td>
+          <td>Xem nhanh nhóm theo SĐT / hồ sơ (nâng cao)</td>
+        </tr>
+        <tr>
+          <td><strong>Cài đặt CRM</strong></td>
+          <td>Template tin, webhook, cấu hình nâng cao</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="gui-tin">5. Gửi tin hàng ngày (menu Công việc)</h2>
+
+    <h3>Trạng thái từng nhóm</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Trạng thái</th>
+          <th>Ý nghĩa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Chưa gửi</td>
+          <td>Chưa gửi tin trong chiến dịch này</td>
+        </tr>
+        <tr>
+          <td>Đã gửi</td>
+          <td>Đã gửi tin lên Zalo</td>
+        </tr>
+        <tr>
+          <td>Đang trả lời</td>
+          <td>Khách đã phản hồi, đang xử lý</td>
+        </tr>
+        <tr>
+          <td>Hoàn tất</td>
+          <td>Xong việc với nhóm này</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Cách gửi</h3>
+    <ol>
+      <li>Chọn <strong>chiến dịch</strong> ở dropdown trên cùng</li>
+      <li>Mở thẻ nhóm → soạn nội dung trong ô tin nhắn</li>
+      <li>
+        <strong>Gửi Web</strong> — gửi ngầm qua tab chat.zalo.me (bạn ở lại CRM). Cần: extension + mã sync + đăng
+        nhập Zalo Web
+      </li>
+      <li>
+        Hoặc <strong>Mở Zalo</strong> → gửi tay → đổi dropdown trạng thái sang <strong>Đã gửi</strong>
+      </li>
+    </ol>
+
+    <div class="box box--warn">
+      Nếu Gửi Web báo «Không tìm thấy nhóm»: trên chat.zalo.me click đúng nhóm bên trái một lần, rồi thử lại. Tên
+      nhóm trong CRM nên khớp tên trên Zalo.
+    </div>
+
+    <h3>Lọc &amp; tìm kiếm (Công việc)</h3>
+    <ul>
+      <li>Ô tìm kiếm trên cùng — lọc theo tên nhóm, nội dung, người phụ trách</li>
+      <li>Bộ lọc trạng thái, ưu tiên, follow-up quá hạn</li>
+      <li>Phân trang 10 / 25 / 50 / 100 nhóm mỗi trang</li>
+      <li><strong>Export CSV</strong> — xuất báo cáo theo bộ lọc hiện tại</li>
+    </ul>
+
+    <h2 id="broadcast">6. Thông báo hàng loạt (menu Thông báo)</h2>
+    <p>Dùng khi cần <strong>cùng 1 nội dung</strong> gửi nhiều nhóm (VD: thông báo nghỉ lễ). Ít dùng hơn tin riêng từng nhóm.</p>
+    <ol>
+      <li><strong>Tạo thông báo mới</strong> → tiêu đề + nội dung chung</li>
+      <li>Chọn nhiều nhóm (không giới hạn ~100 như app Zalo)</li>
+      <li><strong>Lưu</strong> → chọn thông báo ở menu «Đang xem»</li>
+      <li>Gửi từng nhóm bằng <strong>Gửi Web</strong> hoặc chọn nhiều → <strong>Gửi Web (đã chọn)</strong></li>
+      <li>CRM theo dõi nhóm nào <strong>Đã gửi</strong> / chưa gửi</li>
+    </ol>
+
+    <h2 id="file">7. File đính kèm (ảnh, PDF, Excel, XML…)</h2>
+    <ul>
+      <li>Trên thẻ nhóm → <strong>Chi tiết</strong> → <strong>+ Thêm file</strong></li>
+      <li>File lưu trên CRM để team biết cần gửi kèm gì</li>
+      <li>
+        <strong>Gửi file vẫn làm tay trên Zalo</strong> (Web hoặc app) — CRM không tự đính kèm file lên Zalo
+      </li>
+    </ul>
+
+    <h2 id="phan-quyen">8. Phân quyền</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Vai trò</th>
+          <th>Được làm</th>
+          <th>Không được</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Admin</strong></td>
+          <td>Full: import, xóa, mã sync, cài đặt</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong>Editor</strong></td>
+          <td>Soạn tin, gửi Web, tạo broadcast</td>
+          <td>Xóa nhóm/chiến dịch</td>
+        </tr>
+        <tr>
+          <td><strong>Responder</strong></td>
+          <td>Đổi trạng thái (đã gửi, đang trả lời…)</td>
+          <td>Sửa nội dung tin, import</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="loi">9. Lỗi thường gặp</h2>
+
+    <h3>Search / tìm nhóm không ra</h3>
+    <ul>
+      <li>Dùng ô <strong>Tìm…</strong> viền xanh (menu Nhóm &amp; chiến dịch), không dùng ô «Thêm nhóm»</li>
+      <li>Thử bấm filter <strong>Tất cả</strong> thay vì chỉ «Nhóm»</li>
+    </ul>
+
+    <h3>Gửi Web không được</h3>
+    <ul>
+      <li>CRM → Đồng bộ Zalo → có mã sync chưa?</li>
+      <li>Tab chat.zalo.me mở và đã đăng nhập?</li>
+      <li>Reload extension v1.7+ → F5 CRM → F5 Zalo</li>
+      <li>Đã chọn chiến dịch và soạn nội dung tin chưa?</li>
+    </ul>
+
+    <h3>Quét nhóm thiếu</h3>
+    <ul>
+      <li>Đợi extension quét xong (nhiều nhóm = vài phút)</li>
+      <li>Cuộn danh sách chat bên trái trên Zalo trước khi quét</li>
+      <li>Quét lại → import merge (không xóa nhóm cũ)</li>
+    </ul>
+
+    <h3>Server không chạy</h3>
+    <ul>
+      <li><code>npm.cmd start</code> trong thư mục dự án</li>
+      <li>Cần PostgreSQL đang chạy (Docker hoặc cài local)</li>
+    </ul>
+
+    <h2 id="checklist">10. Checklist kiểm tra nhanh</h2>
+    <ul class="checklist">
+      <li>Đăng nhập admin OK</li>
+      <li>Extension cài + mã sync tạo xong</li>
+      <li>Quét Zalo → import ≥ 1 nhóm</li>
+      <li>Tạo 1 chiến dịch</li>
+      <li>Công việc: soạn tin → Gửi Web → trạng thái Đã gửi</li>
+      <li>(Tuỳ chọn) Thông báo hàng loạt 2–3 nhóm</li>
+      <li>(Tuỳ chọn) Thêm file đính kèm trên thẻ nhóm</li>
+    </ul>
+
+    <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--line)" />
+    <p class="lead" style="font-size: 0.9rem">
+      Zalo Campaign CRM · Phiên bản tài liệu: 2026-05 · Mở file này bằng trình duyệt → In → Lưu PDF nếu cần in
+      hoặc gửi khách.
+    </p>
+  </body>
+</html>

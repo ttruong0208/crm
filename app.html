@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bảng điều khiển · Zalo Campaign CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="app" class="page-app">
+    <div id="trial-top-banner" class="trial-top-banner hidden" role="status"></div>
+    <header class="topbar">
+      <a href="/" class="brand brand-link">
+        <div class="brand-mark" aria-hidden="true">Z</div>
+        <div>
+          <h1>Zalo Campaign CRM</h1>
+          <p id="auth-info" class="auth-status"></p>
+        </div>
+      </a>
+      <div class="topbar-actions">
+        <a href="/pricing.html" id="plan-badge" class="plan-badge plan-badge--basic" title="Gói dịch vụ">Đang tải gói…</a>
+        <div class="role-switcher" id="role-wrap">
+          <label for="role">Vai trò</label>
+          <select id="role" disabled>
+            <option value="admin">Admin</option>
+            <option value="editor">Người soạn tin</option>
+            <option value="responder">Người trả lời</option>
+          </select>
+        </div>
+        <button type="button" class="secondary btn-sm" data-download-guide id="download-guide-btn">
+          📖 Hướng dẫn PDF
+        </button>
+        <button id="logout-btn" class="secondary btn-sm" type="button">Đăng xuất</button>
+      </div>
+    </header>
+
+    <div id="app-content" class="app-content">
+      <div class="app-shell">
+        <aside class="app-sidebar" id="app-sidebar" aria-label="Điều hướng">
+          <nav class="app-nav" id="app-nav">
+            <button type="button" class="app-nav-item" data-view="dashboard">
+              <span class="app-nav-icon" aria-hidden="true">📊</span>
+              <span>Tổng quan</span>
+            </button>
+            <button type="button" class="app-nav-item app-nav-item--admin hidden" data-view="users" id="nav-users">
+              <span class="app-nav-icon" aria-hidden="true">👤</span>
+              <span>Quản lý user</span>
+            </button>
+            <button type="button" class="app-nav-item active" data-view="tasks">
+              <span class="app-nav-icon" aria-hidden="true">📋</span>
+              <span>Công việc</span>
+            </button>
+            <button type="button" class="app-nav-item" data-view="groups">
+              <span class="app-nav-icon" aria-hidden="true">👥</span>
+              <span>Nhóm &amp; chiến dịch</span>
+            </button>
+            <button type="button" class="app-nav-item" data-view="inbox">
+              <span class="app-nav-icon" aria-hidden="true">💬</span>
+              <span>Inbox</span>
+            </button>
+            <button type="button" class="app-nav-item" data-view="broadcast">
+              <span class="app-nav-icon" aria-hidden="true">📢</span>
+              <span>Thông báo</span>
+            </button>
+            <button type="button" class="app-nav-item" data-view="sync">
+              <span class="app-nav-icon" aria-hidden="true">🔗</span>
+              <span>Đồng bộ Zalo</span>
+            </button>
+            <button type="button" class="app-nav-item" data-view="settings">
+              <span class="app-nav-icon" aria-hidden="true">⚙️</span>
+              <span>Cài đặt CRM</span>
+            </button>
+            <a href="/pricing.html" class="app-nav-item app-nav-item--guide" target="_blank" rel="noopener">
+              <span class="app-nav-icon" aria-hidden="true">💰</span>
+              <span>Bảng giá</span>
+            </a>
+            <button type="button" class="app-nav-item app-nav-item--guide" data-download-guide>
+              <span class="app-nav-icon" aria-hidden="true">📖</span>
+              <span>Tải hướng dẫn PDF</span>
+            </button>
+          </nav>
+        </aside>
+
+        <div class="app-main">
+          <div class="app-view" id="view-dashboard" data-view="dashboard">
+            <header class="page-header">
+              <div>
+                <h2 class="page-title">Tổng quan</h2>
+                <p class="page-subtitle">Số liệu chiến dịch đang chọn</p>
+              </div>
+              <label class="page-campaign-pick">
+                Chiến dịch
+                <select id="active-campaign-dashboard"></select>
+              </label>
+            </header>
+            <div id="summary-cards" class="summary-grid summary-grid--modern"></div>
+            <section class="card card-flat admin-dashboard-strip hidden" id="admin-dashboard-strip">
+              <div class="section-head">
+                <h3>Quản trị workspace</h3>
+                <p class="section-desc">Tài khoản team · gói dịch vụ · hạn mức user</p>
+              </div>
+              <div id="admin-dashboard-cards" class="summary-grid summary-grid--compact"></div>
+              <button type="button" class="secondary landing-btn" id="admin-open-users">Mở quản lý user</button>
+            </section>
+            <section class="card card-flat" id="analytics-section">
+              <div class="section-head">
+                <h3>Hiệu suất nhân viên</h3>
+                <p class="section-desc">Tỉ lệ phản hồi · thời gian trung bình · khách nóng</p>
+              </div>
+              <div id="assignee-analytics" class="analytics-table-wrap"></div>
+            </section>
+          </div>
+
+          <div class="app-view" id="view-users" data-view="users">
+            <section class="card section-block card-elevated">
+              <header class="page-header page-header--inset">
+                <div>
+                  <h2 class="page-title">Quản lý user</h2>
+                  <p class="page-subtitle" id="users-page-subtitle">Quản lý team workspace · gói FREE = 1 người (email đăng ký)</p>
+                </div>
+              </header>
+              <div id="team-users-panel" class="team-users-panel">
+                <p class="item-meta">Đang tải…</p>
+              </div>
+            </section>
+          </div>
+
+          <div class="app-view active" id="view-tasks" data-view="tasks">
+      <section class="card section-block section-tasks card-elevated">
+        <header class="page-header page-header--inset">
+          <div>
+            <h2 class="page-title">Công việc theo nhóm</h2>
+            <p class="page-subtitle">Soạn tin · gửi Zalo · theo dõi trạng thái</p>
+          </div>
+        </header>
+        <div class="task-search-prominent">
+          <label class="task-search-label" for="task-search">
+            <span class="task-search-title">Tìm kiếm nhanh</span>
+            <input
+              id="task-search"
+              type="search"
+              placeholder="Tên nhóm, nội dung tin, người xử lý, ghi chú..."
+              autocomplete="off"
+            />
+          </label>
+          <p id="task-search-hint" class="item-meta task-search-hint"></p>
+        </div>
+        <div class="task-template-bar" id="task-template-bar">
+          <label>Chèn mẫu tin
+            <select id="task-insert-template"><option value="">— Chọn mẫu —</option></select>
+          </label>
+          <label>Trả lời nhanh
+            <select id="task-insert-quick"><option value="">— /shortcut —</option></select>
+          </label>
+          <button type="button" class="secondary mini" id="task-insert-apply">Chèn vào ô đang chọn</button>
+        </div>
+        <div class="toolbar toolbar--filters">
+          <label>
+            Chiến dịch
+            <select id="active-campaign"></select>
+          </label>
+          <label>
+            Trạng thái
+            <select id="status-filter">
+              <option value="all">Tất cả</option>
+              <option value="pending">Chưa gửi</option>
+              <option value="sent">Đã gửi</option>
+              <option value="replying">Đang trả lời</option>
+              <option value="done">Hoàn tất</option>
+            </select>
+          </label>
+          <label>
+            Độ nóng
+            <select id="priority-filter">
+              <option value="all">Tất cả</option>
+              <option value="hot">Nóng</option>
+              <option value="warm">Ấm</option>
+              <option value="cold">Lạnh</option>
+            </select>
+          </label>
+          <label>
+            Follow-up
+            <select id="followup-filter">
+              <option value="all">Tất cả</option>
+              <option value="overdue">Quá hạn</option>
+              <option value="today">Hôm nay</option>
+              <option value="none">Chưa đặt lịch</option>
+            </select>
+          </label>
+          <button id="export-csv" type="button" class="secondary btn-sm">Export CSV</button>
+          <button id="focus-overdue" type="button" class="secondary btn-sm">Lọc quá hạn</button>
+        </div>
+        <details class="filter-panel">
+          <summary>Bộ lọc nâng cao</summary>
+          <div class="filter-advanced">
+            <label>
+              Người xử lý
+              <select id="assignee-filter">
+                <option value="all">Tất cả</option>
+                <option value="unassigned">Chưa gán</option>
+                <option value="custom">Theo tên...</option>
+              </select>
+            </label>
+            <label id="assignee-custom-wrap" class="hidden">
+              Tên
+              <input id="assignee-custom" placeholder="VD: Lan" />
+            </label>
+            <label>
+              Điểm từ
+              <input id="score-min" type="number" min="0" max="100" placeholder="0" />
+            </label>
+            <label>
+              Đến
+              <input id="score-max" type="number" min="0" max="100" placeholder="100" />
+            </label>
+            <label>
+              Sắp xếp
+              <select id="sort-by">
+                <option value="group_asc">Tên nhóm (A-Z)</option>
+                <option value="group_desc">Tên nhóm (Z-A)</option>
+                <option value="score_desc">Điểm lead (cao → thấp)</option>
+                <option value="score_asc">Điểm lead (thấp → cao)</option>
+                <option value="followup_asc">Follow-up (sớm nhất)</option>
+                <option value="followup_desc">Follow-up (muộn nhất)</option>
+                <option value="updated_desc">Cập nhật (mới nhất)</option>
+                <option value="updated_asc">Cập nhật (cũ nhất)</option>
+              </select>
+            </label>
+            <label class="filter-check">
+              <input id="filter-has-attachment" type="checkbox" />
+              Có file đính kèm
+            </label>
+            <label class="filter-check">
+              <input id="filter-unassigned" type="checkbox" />
+              Nhóm chưa có owner
+            </label>
+            <button id="clear-filters" type="button" class="secondary">Xóa lọc</button>
+          </div>
+        </details>
+        <p id="filter-summary" class="filter-summary"></p>
+        <details class="notice-collapse">
+          <summary>Hướng dẫn gửi tin (Zalo PC / Web)</summary>
+          <p class="zalo-send-notice item-meta">
+            <strong>App Zalo PC:</strong> Gửi tin trên app → đổi trạng thái sang <strong>Đã gửi</strong> trên thẻ nhóm.<br/>
+            <strong>Gửi (Web):</strong> Tab <strong>chat.zalo.me</strong> mở sẵn → bấm <strong>📤 Gửi (Web)</strong> — gửi ngầm.
+          </p>
+        </details>
+        <details class="bulk-panel">
+          <summary>Thao tác hàng loạt</summary>
+          <div class="bulk-bar">
+            <div class="bulk-item">
+              <label for="bulk-assignee">Gán người xử lý</label>
+              <div class="bulk-inline">
+                <input id="bulk-assignee" placeholder="Tên nhân viên..." />
+                <button id="apply-bulk-assignee" type="button" class="btn-sm">Gán</button>
+              </div>
+            </div>
+            <div class="bulk-item">
+              <label>Trạng thái</label>
+              <div class="bulk-inline">
+                <button id="bulk-mark-sent" type="button" class="secondary btn-sm">Đã gửi</button>
+                <button id="bulk-mark-done" type="button" class="secondary btn-sm">Hoàn tất</button>
+              </div>
+            </div>
+          </div>
+        </details>
+        <div class="task-list-wrap" id="task-table-wrap"></div>
+        <div id="pagination-bar" class="pagination-bar hidden">
+          <div class="pagination-info" id="pagination-info"></div>
+          <div class="pagination-controls">
+            <label>
+              Mỗi trang
+              <select id="page-size">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </label>
+            <button id="page-prev" type="button" class="secondary">Trước</button>
+            <span id="page-indicator" class="page-indicator"></span>
+            <button id="page-next" type="button" class="secondary">Sau</button>
+          </div>
+        </div>
+      </section>
+          </div>
+
+          <div class="app-view" id="view-groups" data-view="groups">
+      <main class="layout layout--groups">
+        <section class="card card-compact card-elevated groups-panel">
+          <div class="groups-workflow">
+            <p class="groups-workflow-title">Bạn cần làm 3 bước (theo thứ tự)</p>
+            <ol class="groups-workflow-steps">
+              <li><strong>Import nhóm</strong> từ Zalo — bấm nút cam bên dưới</li>
+              <li><strong>Tạo chiến dịch</strong> — cột phải → đặt tên → Tạo</li>
+              <li>Menu <strong>Công việc</strong> → chọn chiến dịch → soạn tin → <strong>Gửi Web</strong></li>
+            </ol>
+          </div>
+          <div id="groups-plan-banner" class="plan-banner hidden" role="status"></div>
+          <div class="card-head-row">
+            <h2>Danh sách nhóm Zalo <span id="group-count" class="item-meta"></span></h2>
+          </div>
+          <div class="group-search-wrap">
+            <input
+              id="group-search"
+              type="search"
+              class="group-search-input"
+              placeholder="Tìm tên nhóm, người phụ trách, SĐT..."
+              autocomplete="off"
+            />
+            <p id="group-search-hint" class="item-meta group-search-hint"></p>
+          </div>
+          <div class="group-toolbar">
+            <div class="group-type-filter" id="group-type-filter">
+              <button type="button" class="secondary mini active" data-group-type-filter="group">Nhóm</button>
+              <button type="button" class="secondary mini" data-group-type-filter="user">Cá nhân</button>
+              <button type="button" class="secondary mini" data-group-type-filter="all">Tất cả</button>
+            </div>
+            <label class="crm-segment-filter-label crm-segment-inline">
+              Phân loại
+              <select id="crm-segment-filter" class="crm-segment-filter"></select>
+            </label>
+          </div>
+          <div class="group-import-bar group-import-bar--primary">
+            <button type="button" class="btn-sm" id="toggle-bulk-import">
+              ① Import nhóm từ Zalo / CSV
+            </button>
+          </div>
+          <details class="group-add-details">
+            <summary>+ Thêm nhóm thủ công (ít dùng)</summary>
+            <form id="group-form" class="inline-form">
+              <input id="group-name" placeholder="Tên nhóm mới (không phải ô tìm kiếm)" required />
+              <input id="group-owner" placeholder="Phụ trách (tùy chọn)" />
+              <button type="submit" class="btn-sm secondary">Thêm</button>
+            </form>
+          </details>
+          <div id="bulk-import-panel" class="bulk-import-panel hidden">
+            <p class="import-wizard-lead item-meta">
+              Toàn bộ trong web — không cài Tampermonkey. Admin: quét Zalo Web hoặc dán/CSV → import một lần.
+            </p>
+
+            <section class="import-step import-step-scan">
+              <h3 class="import-step-title">① Quét nhóm tự động (khuyên dùng — 500+ nhóm)</h3>
+              <ol class="import-steps-list">
+                <li>CRM → <strong>Đồng bộ Zalo</strong> → <strong>Tạo mã đồng bộ</strong> → Copy mã</li>
+                <li>
+                  Chrome cài extension:
+                  <code>tools/zalo-sync-extension</code> (Load unpacked)
+                </li>
+                <li>
+                  Mở
+                  <a href="https://chat.zalo.me/" target="_blank" rel="noopener">chat.zalo.me</a>
+                  → dán mã → bấm <strong>Quét nhóm → gửi CRM</strong> (extension tự cuộn &amp; quét)
+                </li>
+                <li>Quay CRM → bấm <strong>Hiện nhóm vừa quét từ Zalo</strong> bên dưới</li>
+              </ol>
+              <div class="bulk-import-actions">
+                <button type="button" id="import-btn-zalo-scan">Hiện danh sách vừa quét</button>
+                <button type="button" class="secondary" id="import-btn-zalo-scan-refresh">Làm mới</button>
+              </div>
+              <div class="import-scan-filter" id="import-scan-filter">
+                <span class="import-scan-filter-label">Chỉ import:</span>
+                <button type="button" class="secondary mini active" data-scan-import-filter="group">Nhóm Zalo</button>
+                <button type="button" class="secondary mini" data-scan-import-filter="user">Chat cá nhân</button>
+                <button type="button" class="secondary mini" data-scan-import-filter="all">Tất cả</button>
+              </div>
+              <p id="import-zalo-scan-meta" class="item-meta import-status-line"></p>
+            </section>
+
+            <section class="import-step">
+              <h3 class="import-step-title">①b Hoặc bookmark (dự phòng)</h3>
+              <ol class="import-steps-list">
+                <li>
+                  Kéo nút vào thanh dấu trang (bookmark) — chỉ làm <strong>một lần</strong>:
+                  <a id="zalo-bookmarklet" class="bookmarklet-link" href="#">Quét nhóm Zalo → copy CSV</a>
+                </li>
+                <li>
+                  Mở
+                  <a href="https://chat.zalo.me/" target="_blank" rel="noopener">chat.zalo.me</a>, đăng nhập,
+                  cuộn danh sách chat/nhóm bên trái.
+                </li>
+                <li>Bấm bookmark vừa kéo → CSV được copy vào clipboard.</li>
+              </ol>
+            </section>
+
+            <section class="import-step">
+              <h3 class="import-step-title">② Dán hoặc chọn file CSV</h3>
+              <p class="item-meta">
+                Mỗi dòng: <code>Tên nhóm</code> hoặc CSV <code>ten_nhom, nguoi_phu_trach, zalo_group_id</code>
+                —
+                <a href="#" id="import-template-csv">Tải file mẫu</a>
+              </p>
+              <textarea
+                id="import-paste-input"
+                placeholder="Dán CSV từ Zalo hoặc danh sách:&#10;Nhom khach 1&#10;Nhom khach 2,Lan&#10;Nhom VIP,,zalo_id_123"
+              ></textarea>
+              <div class="bulk-import-actions">
+                <button type="button" id="import-btn-clipboard" class="secondary">Dán từ clipboard</button>
+                <button type="button" id="import-btn-preview">Xem trước</button>
+                <label class="import-file-label secondary">
+                  Chọn CSV
+                  <input type="file" id="import-csv-file" accept=".csv,text/csv" hidden />
+                </label>
+                <button type="button" id="import-btn-download" class="secondary">Tải CSV</button>
+              </div>
+              <p id="import-status" class="item-meta import-status-line"></p>
+            </section>
+
+            <section class="import-step">
+              <h3 class="import-step-title">③ Import vào CRM (<span id="import-preview-count">0</span> nhóm)</h3>
+              <div class="import-preview-wrap">
+                <table class="import-preview-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Tên</th>
+                      <th>Loại</th>
+                      <th>Phụ trách</th>
+                      <th>Zalo ID</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="import-preview-body"></tbody>
+                </table>
+              </div>
+              <div class="bulk-import-actions">
+                <button type="button" id="import-btn-run">Import vào CRM</button>
+                <span id="bulk-import-result" class="item-meta"></span>
+              </div>
+            </section>
+          </div>
+          <ul id="group-list" class="list list-scroll"></ul>
+        </section>
+
+        <section class="card card-compact card-elevated campaigns-panel">
+          <h2>Chiến dịch</h2>
+          <p class="item-meta campaigns-lead">Mỗi chiến dịch = một đợt gửi tin. Tạo xong → bấm <strong>Soạn tin →</strong> hoặc sang menu <strong>Công việc</strong>.</p>
+          <form id="campaign-form" class="inline-form inline-form--stack">
+            <input id="campaign-name" placeholder="Tên chiến dịch (VD: Tháng 5 — chăm sóc)" required />
+            <textarea id="campaign-note" placeholder="Ghi chú (tùy chọn)" rows="2"></textarea>
+            <button type="submit" class="btn-sm">② Tạo chiến dịch</button>
+          </form>
+          <ul id="campaign-list" class="list list-compact"></ul>
+        </section>
+      </main>
+          </div>
+
+          <div class="app-view" id="view-inbox" data-view="inbox">
+      <section class="card section-block card-elevated" id="crm-inbox-section">
+        <header class="page-header page-header--inset">
+          <div>
+            <h2 class="page-title">Inbox tập trung</h2>
+            <p class="page-subtitle">Mọi nhóm/chat từ mọi tài khoản Zalo</p>
+          </div>
+        </header>
+        <div class="crm-inbox-toolbar">
+          <input id="crm-inbox-search" type="search" placeholder="Tìm tên, SĐT, ID..." />
+          <select id="crm-inbox-account"></select>
+        </div>
+        <ul id="crm-inbox-list" class="list crm-inbox-list"></ul>
+      </section>
+          </div>
+
+          <div class="app-view" id="view-broadcast" data-view="broadcast">
+      <section class="card section-block card-elevated" id="broadcast-section">
+        <div id="broadcast-plan-lock" class="plan-lock-overlay hidden" aria-live="polite"></div>
+        <header class="page-header page-header--inset">
+          <div>
+            <h2 class="page-title">Thông báo hàng loạt</h2>
+            <p class="page-subtitle">Một nội dung · không giới hạn nhóm · Gửi Web ngầm · theo dõi đã gửi</p>
+          </div>
+        </header>
+        <div class="broadcast-toolbar">
+          <button type="button" class="secondary" id="toggle-broadcast-create">Tạo thông báo mới</button>
+          <label class="broadcast-select-label">
+            Đang xem
+            <select id="active-broadcast"></select>
+          </label>
+        </div>
+        <div id="broadcast-create-panel" class="broadcast-create-panel hidden">
+          <form id="broadcast-form" class="stack broadcast-form">
+            <input id="broadcast-title" placeholder="Tiêu đề (VD: Thông báo nghỉ lễ 30/4)" required />
+            <textarea
+              id="broadcast-message"
+              rows="5"
+              placeholder="Nội dung tin giống nhau gửi tất cả nhóm đã chọn..."
+              required
+            ></textarea>
+            <div class="attachment-field">
+              <span class="field-label-inline">File đính kèm (tùy chọn)</span>
+              <label class="attachment-upload-btn secondary mini">+ Thêm file
+                <input type="file" id="broadcast-file-input" class="hidden-file-input" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.xls,.xlsx,.csv,.xml,.doc,.docx,.txt,.zip,image/*" multiple />
+              </label>
+              <div id="broadcast-attachments-list"></div>
+              <p class="item-meta attachment-hint">File lưu trên CRM — team gửi kèm tay trên Zalo.</p>
+            </div>
+            <div class="broadcast-picker-head">
+              <label class="broadcast-search-label">
+                Lọc nhóm
+                <input id="broadcast-group-search" type="search" placeholder="Tên nhóm, người phụ trách..." />
+              </label>
+              <div class="broadcast-picker-actions">
+                <button type="button" class="secondary mini" id="broadcast-select-all">Chọn tất cả (đang lọc)</button>
+                <button type="button" class="secondary mini" id="broadcast-select-none">Bỏ chọn</button>
+                <span id="broadcast-picker-count" class="item-meta"></span>
+              </div>
+            </div>
+            <div id="broadcast-group-picker" class="broadcast-group-picker"></div>
+            <div class="broadcast-form-actions">
+              <button type="submit">Lưu thông báo</button>
+              <button type="button" class="secondary" id="broadcast-cancel-create">Hủy</button>
+            </div>
+          </form>
+        </div>
+        <div id="broadcast-workspace" class="broadcast-workspace">
+          <p id="broadcast-empty" class="item-meta">Chưa có thông báo nào — bấm «Tạo thông báo mới».</p>
+        </div>
+      </section>
+          </div>
+
+          <div class="app-view" id="view-sync" data-view="sync">
+      <section class="card section-block card-elevated">
+        <header class="page-header page-header--inset">
+          <div>
+            <h2 class="page-title">Đồng bộ Zalo</h2>
+            <p class="page-subtitle">Extension · mã sync · tự đánh dấu đã gửi</p>
+          </div>
+        </header>
+        <div class="zalo-sync-panel">
+          <p id="zalo-sync-status" class="item-meta">Chưa bật đồng bộ.</p>
+          <div class="zalo-sync-actions">
+            <button type="button" id="zalo-sync-setup">Tạo / làm mới mã đồng bộ</button>
+            <button type="button" class="secondary" id="zalo-sync-copy">Copy mã</button>
+            <button type="button" class="secondary" id="zalo-sync-refresh">Làm mới CRM</button>
+          </div>
+          <code id="zalo-sync-token" class="zalo-sync-token hidden"></code>
+          <ul id="extension-health-list" class="list extension-health-list"></ul>
+          <ol class="import-steps-list zalo-sync-steps">
+            <li>
+              Chrome → <strong>Extensions</strong> → <strong>Load unpacked</strong> →
+              <code>tools/zalo-sync-extension</code>
+            </li>
+            <li><strong>Tạo mã đồng bộ</strong> → CRM tự đẩy sang extension</li>
+            <li>Chọn chiến dịch → mở <strong>chat.zalo.me</strong> → gửi thử</li>
+          </ol>
+        </div>
+      </section>
+          </div>
+
+          <div class="app-view" id="view-settings" data-view="settings">
+      <section class="card section-block card-elevated">
+        <header class="page-header page-header--inset">
+          <div>
+            <h2 class="page-title">Gói dịch vụ &amp; hạn mức</h2>
+            <p class="page-subtitle">Khóa/mở tính năng theo gói 300 · 600 · 900k</p>
+          </div>
+        </header>
+        <div id="plan-settings-panel" class="plan-settings-panel">
+          <p class="item-meta">Đang tải thông tin gói…</p>
+        </div>
+      </section>
+      <section class="card section-block card-elevated">
+        <header class="page-header page-header--inset">
+          <div>
+            <h2 class="page-title">Cài đặt CRM</h2>
+            <p class="page-subtitle">Tài khoản · thẻ · mẫu tin · webhook</p>
+          </div>
+        </header>
+        <button type="button" class="secondary btn-sm" id="toggle-crm-full">Mở / đóng CRM Full</button>
+        <div id="crm-full-panel" class="crm-full-panel hidden">
+          <div class="crm-full-grid">
+            <div class="crm-full-block">
+              <h3>Tài khoản Zalo</h3>
+              <p class="item-meta">Mỗi tài khoản = 1 profile (mở Zalo Web riêng + extension). CRM gom dữ liệu tập trung.</p>
+              <ul id="crm-accounts-list" class="list"></ul>
+              <form id="crm-account-form" class="stack crm-mini-form">
+                <input id="crm-account-name" placeholder="Tên tài khoản (VD: Sale A)" required />
+                <input id="crm-account-phone" placeholder="SĐT Zalo (tùy chọn)" />
+                <button type="submit">Thêm tài khoản</button>
+              </form>
+              <label>Tài khoản đang chọn <select id="crm-active-account"></select></label>
+            </div>
+            <div class="crm-full-block">
+              <h3>Thẻ &amp; phân loại</h3>
+              <div id="crm-tags-list" class="crm-chips-wrap"></div>
+              <form id="crm-tag-form" class="stack crm-mini-form">
+                <input id="crm-tag-name" placeholder="Tên thẻ mới" />
+                <button type="submit" class="secondary">Thêm thẻ</button>
+              </form>
+            </div>
+            <div class="crm-full-block">
+              <h3>Tin mẫu &amp; trả lời nhanh</h3>
+              <ul id="crm-templates-list" class="list"></ul>
+              <form id="crm-template-form" class="stack crm-mini-form">
+                <input id="crm-template-title" placeholder="Tên mẫu" required />
+                <textarea id="crm-template-body" rows="3" placeholder="Nội dung mẫu..." required></textarea>
+                <button type="submit">Lưu mẫu</button>
+              </form>
+              <ul id="crm-quick-list" class="list"></ul>
+              <form id="crm-quick-form" class="stack crm-mini-form">
+                <input id="crm-quick-shortcut" placeholder="Lối tắt (VD: chao)" />
+                <input id="crm-quick-body" placeholder="Nội dung trả lời nhanh" />
+                <button type="submit" class="secondary">Thêm trả lời nhanh</button>
+              </form>
+            </div>
+            <div class="crm-full-block">
+              <h3>Nhắc chăm sóc</h3>
+              <label>Cảnh báo không tương tác sau <input id="crm-inactive-days" type="number" min="1" max="365" value="14" /> ngày</label>
+              <ul id="crm-care-list" class="list"></ul>
+            </div>
+            <div class="crm-full-block">
+              <h3>Đồng bộ hệ thống ngoài</h3>
+              <label>Webhook URL (tùy chọn) <input id="crm-webhook-url" type="url" placeholder="https://erp.company/hook/zalo" /></label>
+              <button type="button" id="crm-webhook-test" class="secondary">Test webhook</button>
+              <button type="button" id="crm-export-json" class="secondary">Tải JSON export (ERP)</button>
+              <p class="item-meta">API: <code>GET /api/export/crm</code> · Events: scan, sent, import, interaction</p>
+            </div>
+          </div>
+        </div>
+      </section>
+          </div>
+
+      <div id="dedup-merge-modal" class="crm-modal hidden" role="dialog">
+        <div class="crm-modal-card crm-modal-wide">
+          <h3>Trùng SĐT giữa các tài khoản Zalo</h3>
+          <p class="item-meta">Cùng một khách nhắn nhiều số Zalo — chọn gộp hồ sơ để tránh 2 nhân viên chăm trùng.</p>
+          <ul id="dedup-merge-list" class="list dedup-merge-list"></ul>
+          <div class="crm-modal-actions">
+            <button type="button" id="dedup-merge-confirm">Import &amp; gộp đã chọn</button>
+            <button type="button" class="secondary" id="dedup-merge-skip">Import không gộp</button>
+            <button type="button" class="secondary" id="dedup-merge-cancel">Hủy</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="crm-profile-modal" class="crm-modal hidden" role="dialog">
+        <div class="crm-modal-card">
+          <h3>Hồ sơ khách / nhóm</h3>
+          <form id="crm-profile-form" class="stack">
+            <input type="hidden" id="crm-profile-group-id" />
+            <label>Số điện thoại <input id="crm-profile-phone" type="tel" placeholder="09..." /></label>
+            <label>Phân loại <select id="crm-profile-segment"></select></label>
+            <label>Ghi chú <textarea id="crm-profile-note" rows="3"></textarea></label>
+            <fieldset><legend>Thẻ</legend><div id="crm-profile-tags" class="crm-tag-checks"></div></fieldset>
+            <label>Ghi nhận tương tác mới
+              <div class="crm-inline-row">
+                <input id="crm-profile-new-interaction" type="text" placeholder="VD: Gọi lại khách, hẹn gặp..." />
+                <button type="button" class="secondary mini" id="crm-profile-add-interaction">Thêm</button>
+              </div>
+            </label>
+            <div><strong>Lịch sử tương tác (CRM ghi nhận)</strong><ul id="crm-profile-interactions" class="list"></ul></div>
+            <div class="crm-modal-actions">
+              <button type="submit">Lưu hồ sơ</button>
+              <button type="button" class="secondary" id="crm-profile-close">Đóng</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+        </div>
+      </div>
+
+      <footer class="footer">
+        <small>Dữ liệu đồng bộ PostgreSQL · Token tự động refresh</small>
+      </footer>
+    </div>
+
+    <script src="./guide-download.js"></script>
+    <script src="./auth-shared.js"></script>
+    <script src="./zalo-links.js"></script>
+    <script src="./group-import-client.js"></script>
+    <script src="./group-import-wizard.js"></script>
+    <script src="./crm-full-ui.js"></script>
+    <script src="./crm-inbox-ui.js"></script>
+    <script src="./plan-ui.js"></script>
+    <script src="./users-ui.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

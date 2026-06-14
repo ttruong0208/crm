@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập · Zalo Campaign CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="login" class="page-login">
+    <header class="topbar topbar-minimal">
+      <a href="/" class="brand brand-link">
+        <div class="brand-mark" aria-hidden="true">Z</div>
+        <div>
+          <h1>Zalo Campaign CRM</h1>
+        </div>
+      </a>
+      <a href="/register.html" class="btn-primary landing-btn">Đăng ký FREE</a>
+      <a href="/pricing.html" class="secondary landing-btn">Bảng giá</a>
+      <a href="/" class="secondary landing-btn">← Trang chủ</a>
+      <button type="button" class="secondary landing-btn" data-download-guide>📖 Tải hướng dẫn PDF</button>
+    </header>
+
+    <main class="login-page-main">
+      <section class="login-card" id="auth-card">
+        <h2>Đăng nhập</h2>
+        <p class="login-sub">Chủ tài khoản: email + mật khẩu · Nhân viên: username + mật khẩu (do admin tạo)</p>
+        <p id="login-error" class="login-error hidden" role="alert"></p>
+        <p id="login-success" class="register-success hidden" role="status"></p>
+        <form id="login-form" class="stack">
+          <label class="field">
+            <span>Email hoặc username</span>
+            <input id="login-email" type="text" placeholder="email@congty.com hoặc sale_lan" required autocomplete="username" />
+          </label>
+          <label class="field">
+            <span>Mật khẩu</span>
+            <input
+              id="login-password"
+              type="password"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            />
+          </label>
+          <button type="submit" class="btn-primary">Đăng nhập</button>
+        </form>
+        <p class="item-meta login-register-link">
+          Chưa có tài khoản? <a href="/register.html">Đăng ký FREE 1 ngày</a>
+        </p>
+      </section>
+    </main>
+
+    <script src="./guide-download.js"></script>
+    <script src="./auth-shared.js"></script>
+    <script src="./login.js"></script>
+  </body>
+</html>

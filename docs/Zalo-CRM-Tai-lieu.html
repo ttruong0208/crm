@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Zalo Campaign CRM — Tài liệu sản phẩm</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1e293b;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 12mm;
+    }
+    h1 { font-size: 22pt; color: #0068ff; margin: 0 0 6px; }
+    h2 { font-size: 14pt; color: #0f172a; border-bottom: 2px solid #0068ff; padding-bottom: 4px; margin-top: 22px; }
+    h3 { font-size: 12pt; color: #334155; margin-top: 14px; }
+    .subtitle { color: #64748b; font-size: 11pt; margin-bottom: 20px; }
+    .cover-meta { font-size: 10pt; color: #64748b; margin-top: 24px; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 10pt; }
+    th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    ul { margin: 6px 0 12px; padding-left: 20px; }
+    li { margin: 3px 0; }
+    .badge { display: inline-block; background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; }
+    .warn { background: #fef3c7; color: #92400e; padding: 8px 12px; border-radius: 6px; font-size: 10pt; margin: 10px 0; }
+    .page-break { page-break-before: always; }
+    code { background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 9.5pt; }
+    .footer { margin-top: 30px; font-size: 9pt; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>Zalo Campaign CRM</h1>
+  <p class="subtitle">Tài liệu sản phẩm &amp; hướng dẫn vận hành — Phiên bản MVP Full</p>
+  <p><span class="badge">v1.4.0 Extension</span> &nbsp; Cập nhật: Tháng 5/2026</p>
+
+  <div class="cover-meta">
+    <strong>Mục đích:</strong> Quản lý chiến dịch Zalo nhóm (~300 nhóm, ~1000 tin/ngày), tin riêng từng nhóm, gửi thủ công trên chat.zalo.me, CRM theo dõi trạng thái tập trung.<br/>
+    <strong>Đường dẫn project:</strong> <code>C:\Users\Admin\zalo-crm-mvp</code><br/>
+    <strong>Chạy hệ thống:</strong> <code>npm.cmd start</code> → <code>http://localhost:3000</code>
+  </div>
+
+  <h2>1. Tài khoản demo</h2>
+  <table>
+    <tr><th>Vai trò</th><th>Username</th><th>Password</th><th>Quyền chính</th></tr>
+    <tr><td>Admin</td><td>admin</td><td>admin123</td><td>Full: import, sync, xóa, webhook, tài khoản Zalo</td></tr>
+    <tr><td>Editor</td><td>editor</td><td>editor123</td><td>Soạn tin, gán assignee, follow-up, broadcast</td></tr>
+    <tr><td>Responder</td><td>responder</td><td>responder123</td><td>Chủ yếu đổi trạng thái task</td></tr>
+  </table>
+
+  <h2>2. Quy trình vận hành (khuyến nghị)</h2>
+  <ol>
+    <li><strong>Thiết lập:</strong> Admin đăng nhập → tạo tài khoản Zalo trong CRM Full → tạo mã sync từng account.</li>
+    <li><strong>Extension:</strong> Chrome → Load unpacked → <code>tools/zalo-sync-extension</code> → dán mã sync → mở chat.zalo.me.</li>
+    <li><strong>Import nhóm:</strong> Extension quét nhóm → CRM «Hiện nhóm vừa quét» → Import (lọc Nhóm / Cá nhân).</li>
+    <li><strong>Chiến dịch:</strong> Tạo chiến dịch → soạn tin riêng từng nhóm → gán nhân viên.</li>
+    <li><strong>Gửi tin:</strong> Nhân viên mở Zalo Web → bấm «💬 Mở Zalo» từ CRM → gửi tay → extension tự đánh dấu «Đã gửi».</li>
+    <li><strong>Theo dõi:</strong> Inbox tập trung, nhắc chăm sóc, analytics nhân viên, export CSV/JSON.</li>
+  </ol>
+
+  <h2>3. Danh sách chức năng đầy đủ</h2>
+
+  <h3>3.1 Đăng nhập &amp; bảo mật</h3>
+  <ul>
+    <li>JWT access token + refresh token tự động</li>
+    <li>Dữ liệu lưu PostgreSQL theo user</li>
+    <li>Sync token extension: <strong>chỉ POST</strong> — không GET/DELETE dữ liệu CRM</li>
+  </ul>
+
+  <h3>3.2 Nhóm &amp; Import</h3>
+  <ul>
+    <li>Thêm / xóa nhóm, phân loại Nhóm / Cá nhân</li>
+    <li>Import: Extension quét API Zalo, CSV, dán text, bookmarklet</li>
+    <li>Re-import cập nhật chatType, Zalo ID (<code>updateExisting</code>)</li>
+    <li>Gộp trùng SĐT giữa các tài khoản Zalo (modal khi import)</li>
+    <li>Hồ sơ KH: SĐT, ghi chú, thẻ, phân loại, lịch sử tương tác</li>
+  </ul>
+
+  <h3>3.3 Chiến dịch &amp; Công việc</h3>
+  <ul>
+    <li>Tin nhắn <strong>riêng từng nhóm</strong> trong chiến dịch</li>
+    <li>Trạng thái: Chưa gửi → Đã gửi → Đang trả lời → Hoàn tất</li>
+    <li>Assignee, độ nóng, điểm lead, follow-up (+24h/+48h)</li>
+    <li>Lọc nâng cao + phân trang (10/25/50/100)</li>
+    <li>Gán hàng loạt, đánh dấu Đã gửi/Hoàn tất theo bộ lọc</li>
+    <li>Chèn mẫu tin / trả lời nhanh vào ô đang chọn</li>
+    <li>Export CSV chiến dịch</li>
+    <li><strong>💬 Mở Zalo</strong> — link trực tiếp tới chat</li>
+  </ul>
+
+  <h3>3.4 Broadcast (thông báo hàng loạt)</h3>
+  <ul>
+    <li>Một nội dung → nhiều nhóm, theo dõi đã gửi từng nhóm</li>
+    <li>Gửi thủ công trên Zalo Web, CRM quản lý tiến độ</li>
+  </ul>
+
+  <h3>3.5 CRM Full</h3>
+  <ul>
+    <li>Đa tài khoản Zalo + mã sync riêng từng account</li>
+    <li>Thẻ &amp; phân loại KH (Lead, VIP, Đã mua…)</li>
+    <li>Thư viện mẫu tin &amp; trả lời nhanh</li>
+    <li>Nhắc chăm sóc (inactive + follow-up quá hạn)</li>
+    <li>Inbox tập trung — sắp theo tương tác gần nhất</li>
+    <li>Webhook + Export JSON (<code>GET /api/export/crm</code>)</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <h2>4. Tính năng vận hành (PO — đã triển khai)</h2>
+
+  <h3>4.1 Health Check Extension (Heartbeat)</h3>
+  <ul>
+    <li>Extension gửi <code>POST /api/sync/heartbeat</code> mỗi <strong>5 phút</strong></li>
+    <li>CRM hiển thị <strong>Online / Offline</strong> (ngưỡng 10 phút không có tín hiệu)</li>
+    <li>Vị trí: CRM Full → Tài khoản Zalo; mục Đồng bộ Zalo → danh sách heartbeat</li>
+    <li>Admin thấy cảnh báo khi extension offline</li>
+  </ul>
+
+  <h3>4.2 Gộp trùng SĐT (Deduplication)</h3>
+  <ul>
+    <li>Khi import, nếu SĐT đã tồn tại ở tài khoản khác → modal hỏi gộp hồ sơ</li>
+    <li>API: <code>POST /api/groups/check-duplicates</code>, <code>POST /api/crm/merge-groups</code></li>
+    <li>Gộp: tag, lịch sử, task, broadcast; lưu <code>linkedZaloChats[]</code></li>
+  </ul>
+  <div class="warn">⚠ Gộp SĐT cần nhóm đã có số điện thoại trong hồ sơ CRM. Quét Zalo thường chưa có SĐT — nhập tay trong Hồ sơ.</div>
+
+  <h3>4.3 Bảo mật Sync Token</h3>
+  <p>Token extension <strong>chỉ được POST</strong> vào 4 endpoint:</p>
+  <ul>
+    <li><code>/api/sync/heartbeat</code></li>
+    <li><code>/api/sync/scan-groups</code></li>
+    <li><code>/api/sync/zalo-sent</code></li>
+    <li><code>/api/sync/interaction</code></li>
+  </ul>
+  <p>Không thể dùng token để GET danh sách khách, export, hay xóa DB qua JWT endpoints.</p>
+
+  <h3>4.4 Analytics nhân viên</h3>
+  <p>Section «Hiệu suất nhân viên» theo chiến dịch đang chọn:</p>
+  <table>
+    <tr><th>Chỉ số</th><th>Ý nghĩa</th></tr>
+    <tr><td>Tỉ lệ phản hồi</td><td>(Đang trả lời + Hoàn tất) / (Đã gửi + đã phản hồi)</td></tr>
+    <tr><td>TB thời gian phản hồi</td><td>Từ sentAt → repliedAt</td></tr>
+    <tr><td>Khách nóng</td><td>Số task priority = hot mỗi assignee</td></tr>
+  </table>
+  <p>API: <code>GET /api/analytics/assignees?campaignId=...</code></p>
+
+  <h3>4.5 Mở chat Zalo từ CRM</h3>
+  <ul>
+    <li>Nút «💬 Mở Zalo» tại: bảng công việc, danh sách nhóm, inbox</li>
+    <li>Cá nhân/SĐT → <code>https://zalo.me/84...</code></li>
+    <li>Nhóm có ID → <code>https://zalo.me/g/{id}</code></li>
+  </ul>
+
+  <h2>5. Cài Extension Chrome</h2>
+  <ol>
+    <li>Mở <code>chrome://extensions</code> → Bật Developer mode</li>
+    <li>Load unpacked → chọn <code>tools\zalo-sync-extension</code></li>
+    <li>CRM → Tạo mã sync (hoặc Mã sync theo tài khoản) → Copy</li>
+    <li>Mở chat.zalo.me → dán mã vào panel extension</li>
+    <li>Chọn chiến dịch đang chạy trong CRM</li>
+    <li>Bấm «Quét nhóm → gửi CRM» hoặc gửi tin để test đồng bộ</li>
+  </ol>
+
+  <h2>6. API Backend (tóm tắt)</h2>
+  <table>
+    <tr><th>Endpoint</th><th>Mô tả</th></tr>
+    <tr><td>POST /api/login</td><td>Đăng nhập</td></tr>
+    <tr><td>GET /api/state</td><td>Lấy dữ liệu (JWT)</td></tr>
+    <tr><td>POST /api/groups/bulk-import</td><td>Import nhóm</td></tr>
+    <tr><td>POST /api/groups/check-duplicates</td><td>Kiểm tra trùng SĐT</td></tr>
+    <tr><td>POST /api/crm/merge-groups</td><td>Gộp 2 hồ sơ</td></tr>
+    <tr><td>GET /api/analytics/assignees</td><td>Hiệu suất nhân viên</td></tr>
+    <tr><td>GET /api/export/crm</td><td>Export JSON ERP</td></tr>
+    <tr><td>POST /api/sync/*</td><td>Extension only (token POST)</td></tr>
+  </table>
+
+  <h2>7. Giới hạn &amp; lưu ý</h2>
+  <ul>
+    <li><strong>Không auto gửi Zalo</strong> — cố ý, tránh rủi ro khóa tài khoản</li>
+    <li>Inbox CRM = dữ liệu ghi nhận qua CRM/extension, không phải inbox Zalo live đầy đủ</li>
+    <li>Mỗi tài khoản Zalo vẫn mở browser/profile riêng</li>
+    <li>Zalo Web cập nhật thường xuyên — cần theo dõi extension Online/Offline</li>
+    <li>Chưa deploy production — cần hosting + backup DB cho khách hàng</li>
+  </ul>
+
+  <h2>8. Mức hoàn thiện ước tính</h2>
+  <table>
+    <tr><th>Hạng mục</th><th>%</th></tr>
+    <tr><td>Core CRM (nhóm, chiến dịch, task, broadcast)</td><td>~95%</td></tr>
+    <tr><td>CRM Full (đa Zalo, hồ sơ, inbox)</td><td>~85%</td></tr>
+    <tr><td>Extension (quét, sync, heartbeat)</td><td>~90%</td></tr>
+    <tr><td>Bảo mật &amp; analytics PO</td><td>~90%</td></tr>
+    <tr><td>Enterprise (auto gửi, API Zalo chính thức)</td><td>0% — ngoài phạm vi MVP</td></tr>
+  </table>
+
+  <div class="footer">
+    Zalo Campaign CRM — Tài liệu nội bộ / giao khách hàng<br/>
+    Generated from zalo-crm-mvp project
+  </div>
+
+</body>
+</html>

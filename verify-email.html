@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nhập mã xác minh · Zalo Campaign CRM</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="login" class="page-login">
+    <header class="topbar topbar-minimal">
+      <a href="/" class="brand brand-link">
+        <div class="brand-mark" aria-hidden="true">Z</div>
+        <div><h1>Zalo Campaign CRM</h1></div>
+      </a>
+      <a href="/login.html" class="secondary landing-btn">← Đăng nhập</a>
+    </header>
+    <main class="login-page-main">
+      <section class="login-card">
+        <h2>Nhập mã xác minh</h2>
+        <p class="login-sub">Mã 6 số đã gửi tới email của bạn (hiệu lực 15 phút)</p>
+        <p id="verify-error" class="login-error hidden" role="alert"></p>
+        <p id="verify-success" class="register-success hidden" role="status"></p>
+        <p id="verify-dev-code" class="verify-dev-code hidden" role="status"></p>
+        <form id="verify-form" class="stack">
+          <label class="field">
+            <span>Email</span>
+            <input id="verify-email" type="email" required autocomplete="email" />
+          </label>
+          <label class="field">
+            <span>Mã xác minh (6 số)</span>
+            <input
+              id="verify-code"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]{6}"
+              maxlength="6"
+              placeholder="123456"
+              required
+              autocomplete="one-time-code"
+            />
+          </label>
+          <button type="submit" class="btn-primary">Xác minh</button>
+        </form>
+        <p class="item-meta verify-resend-row">
+          Không nhận được mã?
+          <button type="button" class="link-btn" id="verify-resend">Gửi lại mã</button>
+        </p>
+      </section>
+    </main>
+    <script src="./verify-email.js"></script>
+  </body>
+</html>
