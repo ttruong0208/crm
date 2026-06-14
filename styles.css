@@ -1441,6 +1441,65 @@ a.landing-btn.secondary {
   line-height: 1.55;
 }
 
+.auth-loading-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(15, 23, 42, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-loading-popup.hidden {
+  display: none;
+}
+
+.auth-loading-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-loading-spinner {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 18px;
+  border: 3px solid #e2e8f0;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: auth-loading-spin 0.75s linear infinite;
+}
+
+@keyframes auth-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-loading-title {
+  margin: 0 0 8px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.auth-loading-message {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+body.auth-loading-open {
+  overflow: hidden;
+}
+
 .register-dev-banner {
   margin: 0 0 14px;
   padding: 10px 12px;

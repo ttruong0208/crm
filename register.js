@@ -2,6 +2,8 @@ const registerForm = document.getElementById("register-form");
 const registerError = document.getElementById("register-error");
 const registerSuccess = document.getElementById("register-success");
 const submitBtn = document.getElementById("register-submit");
+const loadingPopup = document.getElementById("register-loading-popup");
+const loadingMessage = document.getElementById("register-loading-message");
 
 let submitting = false;
 
@@ -12,28 +14,43 @@ function initRegisterPage() {
 }
 
 function showError(message) {
+  hideLoadingPopup();
   registerSuccess?.classList.add("hidden");
   if (!registerError) return;
   registerError.textContent = message;
   registerError.classList.remove("hidden");
 }
 
-function showLoading(message) {
+function showLoadingPopup(message) {
   registerError?.classList.add("hidden");
-  if (!registerSuccess) return;
-  registerSuccess.textContent = message;
-  registerSuccess.classList.remove("hidden");
+  registerSuccess?.classList.add("hidden");
+  if (loadingMessage) {
+    loadingMessage.textContent = message || "Đang tạo tài khoản, vui lòng đợi.";
+  }
+  loadingPopup?.classList.remove("hidden");
+  document.body.classList.add("auth-loading-open");
 }
 
-function setSubmitting(active) {
+function hideLoadingPopup() {
+  loadingPopup?.classList.add("hidden");
+  document.body.classList.remove("auth-loading-open");
+}
+
+function setSubmitting(active, message) {
   submitting = active;
   if (submitBtn) {
     submitBtn.disabled = active;
     submitBtn.textContent = active ? "Đang đăng ký…" : "Đăng ký FREE";
   }
+  if (active) {
+    showLoadingPopup(message);
+    return;
+  }
+  hideLoadingPopup();
 }
 
 function goVerifyPage(email, devCode, verifyUrl) {
+  showLoadingPopup("Đăng ký thành công. Đang chuyển trang xác minh…");
   if (verifyUrl) {
     window.location.href = verifyUrl;
     return;
@@ -59,8 +76,7 @@ async function handleRegisterSubmit(event) {
     return;
   }
 
-  setSubmitting(true);
-  showLoading("Đang tạo tài khoản… Vui lòng đợi, không bấm lại.");
+  setSubmitting(true, "Đang tạo tài khoản… Vui lòng đợi, không bấm lại.");
 
   try {
     const response = await fetch("/api/register", {
