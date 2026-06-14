@@ -1654,6 +1654,14 @@ body.extension-modal-open {
   overflow: hidden;
 }
 
+.extension-install-page-card {
+  max-width: 640px;
+}
+
+.extension-install-page-card .extension-install-card {
+  margin-bottom: 0;
+}
+
 .register-dev-banner {
   margin: 0 0 14px;
   padding: 10px 12px;

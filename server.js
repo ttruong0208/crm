@@ -179,6 +179,26 @@ function resolvePublicFile(urlPath) {
   return null;
 }
 
+function resolveExtensionZipPath() {
+  const candidates = [
+    path.join(PUBLIC_ROOT, "downloads", "zalo-crm-extension.zip"),
+    path.join(__dirname, "public", "downloads", "zalo-crm-extension.zip"),
+    path.join(process.cwd(), "public", "downloads", "zalo-crm-extension.zip"),
+  ];
+  for (const candidate of candidates) {
+    try {
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) return candidate;
+    } catch {
+      // ignore
+    }
+  }
+  return null;
+}
+
+function isStaticAssetPath(urlPath) {
+  return /^\/(downloads|assets|docs|tools)(\/|$)/.test(String(urlPath || ""));
+}
+
 async function pushCrmWebhook(state, event, data) {
   const url = state.crmSettings?.webhookUrl;
   const secret = state.crmSettings?.webhookSecret;
@@ -1319,6 +1339,29 @@ app.get("/api/docs/huong-dan.pdf", async (_req, res) => {
   }
 });
 
+app.get(["/downloads/zalo-crm-extension", "/downloads/zalo-crm-extension/"], (_req, res) => {
+  return res.redirect(301, "/extension-install.html");
+});
+
+app.get("/downloads/zalo-crm-extension.zip", (_req, res) => {
+  const zipPath = resolveExtensionZipPath();
+  if (!zipPath) {
+    return res.status(404).type("html").send(`<!doctype html>
+<html lang="vi"><head><meta charset="UTF-8"/><title>Extension chưa sẵn sàng</title></head>
+<body style="font-family:Inter,sans-serif;padding:32px;max-width:520px;margin:auto">
+<h1>File extension chưa có trên server</h1>
+<p>Admin cần chạy <code>npm run vercel-build</code> rồi deploy lại.</p>
+<p><a href="/extension-install.html">Quay lại hướng dẫn cài</a></p>
+</body></html>`);
+  }
+  res.setHeader("Content-Type", "application/zip");
+  res.setHeader(
+    "Content-Disposition",
+    'attachment; filename="zalo-crm-extension-v1.7.0.zip"',
+  );
+  return res.sendFile(zipPath);
+});
+
 app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api")) return next();
   const filePath = resolvePublicFile(req.path);
@@ -1326,6 +1369,18 @@ app.get("*", (req, res, next) => {
     return res.sendFile(filePath, (err) => {
       if (err) next(err);
     });
+  }
+  if (isStaticAssetPath(req.path)) {
+    return res.status(404).type("html").send(`<!doctype html>
+<html lang="vi"><head><meta charset="UTF-8"/><title>Không tìm thấy</title>
+<link rel="stylesheet" href="/styles.css"/></head>
+<body class="page-login" style="padding:32px;max-width:560px;margin:40px auto">
+<h2>Không tìm thấy file</h2>
+<p class="item-meta">Đường dẫn <code>${req.path}</code> không tồn tại.</p>
+<p><a class="btn-primary landing-btn" href="/downloads/zalo-crm-extension.zip">⬇ Tải extension (ZIP)</a>
+<a class="secondary landing-btn" href="/extension-install.html" style="margin-left:8px">Hướng dẫn cài</a></p>
+<p><a href="/">← Trang chủ</a></p>
+</body></html>`);
   }
   return res.sendFile(path.join(PUBLIC_ROOT, "index.html"), (err) => {
     if (err) next(err);

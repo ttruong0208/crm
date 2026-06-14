@@ -34,16 +34,6 @@ try {
   }
   console.log("Built", outFile);
 } catch (error) {
-  console.warn("build-extension-zip failed:", error.message);
-  fs.mkdirSync(path.join(outDir, "zalo-crm-extension"), { recursive: true });
-  for (const name of fs.readdirSync(extDir)) {
-    const from = path.join(extDir, name);
-    const to = path.join(outDir, "zalo-crm-extension", name);
-    if (fs.statSync(from).isDirectory()) {
-      fs.cpSync(from, to, { recursive: true });
-    } else {
-      fs.copyFileSync(from, to);
-    }
-  }
-  console.log("Zip unavailable — copied unpacked extension to public/downloads/zalo-crm-extension/");
+  console.error("build-extension-zip failed:", error.message);
+  process.exitCode = 1;
 }

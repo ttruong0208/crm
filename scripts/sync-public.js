@@ -10,6 +10,7 @@ const rootFiles = [
   "login.html",
   "register.html",
   "verify-email.html",
+  "extension-install.html",
   "app.html",
   "pricing.html",
   "styles.css",

@@ -1,6 +1,6 @@
 const EXTENSION_VERSION = "1.7.0";
 const EXTENSION_ZIP_URL = "/downloads/zalo-crm-extension.zip";
-const EXTENSION_FOLDER_URL = "/downloads/zalo-crm-extension/";
+const EXTENSION_GUIDE_URL = "/extension-install.html";
 const EXTENSION_MODAL_SESSION_KEY = "crm_extension_modal_dismissed";
 
 function extensionDownloadFilename() {
@@ -37,7 +37,7 @@ function buildExtensionInstallCard({ compact = false, showDismiss = false } = {}
             download="${extensionDownloadFilename()}"
             class="btn-primary extension-download-btn"
           >⬇ Tải extension Chrome (v${EXTENSION_VERSION})</a>
-          <a href="${EXTENSION_FOLDER_URL}" target="_blank" rel="noopener" class="secondary landing-btn extension-folder-link">Mở thư mục extension</a>
+          <a href="${EXTENSION_GUIDE_URL}" class="secondary landing-btn">Hướng dẫn cài chi tiết</a>
           <button type="button" class="secondary landing-btn" data-extension-open-sync>Đồng bộ Zalo →</button>
           ${
             showDismiss
