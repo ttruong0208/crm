@@ -5,7 +5,13 @@
   "description": "Quét danh sách nhóm từ chat.zalo.me vào CRM; tự đánh dấu Đã gửi khi gửi tin.",
   "permissions": ["storage", "tabs", "scripting"],
   "background": { "service_worker": "background.js" },
-  "host_permissions": ["https://chat.zalo.me/*", "https://*.zalo.me/*", "http://localhost:*/*", "http://127.0.0.1:*/*"],
+  "host_permissions": [
+    "https://chat.zalo.me/*",
+    "https://*.zalo.me/*",
+    "http://localhost:*/*",
+    "http://127.0.0.1:*/*",
+    "https://*.vercel.app/*"
+  ],
   "content_scripts": [
     {
       "matches": ["https://chat.zalo.me/*", "https://*.zalo.me/*"],

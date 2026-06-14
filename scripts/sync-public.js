@@ -22,6 +22,7 @@ const rootFiles = [
   "users-ui.js",
   "landing.js",
   "guide-download.js",
+  "extension-install.js",
   "group-import-client.js",
   "group-import-wizard.js",
   "crm-full-ui.js",
@@ -48,5 +49,7 @@ for (const file of rootFiles) {
 copyDir(path.join(root, "assets"), path.join(pub, "assets"));
 copyDir(path.join(root, "docs"), path.join(pub, "docs"));
 copyDir(path.join(root, "tools"), path.join(pub, "tools"));
+
+require("./build-extension-zip");
 
 console.log("Synced static files to public/");

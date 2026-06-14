@@ -1218,6 +1218,7 @@ window.addEventListener("message", (event) => {
     zaloCrmBridgeReady = true;
     syncTokenToExtension();
     syncCampaignToExtension();
+    window.ExtensionInstall?.refresh?.({ bridgeReady: true });
   }
 });
 
@@ -1622,6 +1623,13 @@ function initAppNav() {
     });
     localStorage.setItem("crm_active_view", viewId);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    if (viewId === "groups") {
+      window.ExtensionInstall?.refresh?.({ bridgeReady: zaloCrmBridgeReady });
+      window.ExtensionInstall?.showModal?.();
+    }
+    if (viewId === "tasks") {
+      window.ExtensionInstall?.refresh?.({ bridgeReady: zaloCrmBridgeReady });
+    }
     if (viewId === "users" && typeof refreshTeamUsersPanel === "function") {
       refreshTeamUsersPanel();
     }

@@ -138,6 +138,7 @@
             <p class="page-subtitle">Soạn tin · gửi Zalo · theo dõi trạng thái</p>
           </div>
         </header>
+        <div data-extension-banner data-compact="1" id="extension-banner-tasks"></div>
         <div class="task-search-prominent">
           <label class="task-search-label" for="task-search">
             <span class="task-search-title">Tìm kiếm nhanh</span>
@@ -293,6 +294,7 @@
           <div class="app-view" id="view-groups" data-view="groups">
       <main class="layout layout--groups">
         <section class="card card-compact card-elevated groups-panel">
+          <div data-extension-banner id="extension-banner-groups"></div>
           <div class="groups-workflow">
             <p class="groups-workflow-title">Bạn cần làm 3 bước (theo thứ tự)</p>
             <ol class="groups-workflow-steps">
@@ -349,8 +351,8 @@
               <ol class="import-steps-list">
                 <li>CRM → <strong>Đồng bộ Zalo</strong> → <strong>Tạo mã đồng bộ</strong> → Copy mã</li>
                 <li>
-                  Chrome cài extension:
-                  <code>tools/zalo-sync-extension</code> (Load unpacked)
+                  <strong>Tải extension Chrome</strong> (nút xanh ở đầu trang) → giải nén →
+                  <code>chrome://extensions</code> → Load unpacked
                 </li>
                 <li>
                   Mở
@@ -438,6 +440,7 @@
         </section>
 
         <section class="card card-compact card-elevated campaigns-panel">
+          <div data-extension-banner data-compact="1" id="extension-banner-campaigns"></div>
           <h2>Chiến dịch</h2>
           <p class="item-meta campaigns-lead">Mỗi chiến dịch = một đợt gửi tin. Tạo xong → bấm <strong>Soạn tin →</strong> hoặc sang menu <strong>Công việc</strong>.</p>
           <form id="campaign-form" class="inline-form inline-form--stack">
@@ -531,6 +534,7 @@
             <p class="page-subtitle">Extension · mã sync · tự đánh dấu đã gửi</p>
           </div>
         </header>
+        <div data-extension-banner id="extension-banner-sync"></div>
         <div class="zalo-sync-panel">
           <p id="zalo-sync-status" class="item-meta">Chưa bật đồng bộ.</p>
           <div class="zalo-sync-actions">
@@ -542,8 +546,8 @@
           <ul id="extension-health-list" class="list extension-health-list"></ul>
           <ol class="import-steps-list zalo-sync-steps">
             <li>
-              Chrome → <strong>Extensions</strong> → <strong>Load unpacked</strong> →
-              <code>tools/zalo-sync-extension</code>
+              Bấm <strong>Tải extension Chrome</strong> ở trên → giải nén → Chrome
+              <strong>Extensions</strong> → <strong>Load unpacked</strong>
             </li>
             <li><strong>Tạo mã đồng bộ</strong> → CRM tự đẩy sang extension</li>
             <li>Chọn chiến dịch → mở <strong>chat.zalo.me</strong> → gửi thử</li>
@@ -670,8 +674,19 @@
       </footer>
     </div>
 
+    <div id="extension-install-modal" class="extension-install-modal hidden" role="dialog" aria-modal="true" aria-labelledby="extension-install-modal-title">
+      <div class="extension-install-modal-backdrop"></div>
+      <div class="extension-install-modal-card">
+        <button type="button" class="extension-install-modal-close secondary" aria-label="Đóng">✕</button>
+        <h2 id="extension-install-modal-title" class="extension-install-modal-title">Cài extension để dùng Nhóm &amp; Chiến dịch</h2>
+        <p class="item-meta">Quét nhóm Zalo và gửi tin chiến dịch cần extension Chrome — tải và cài một lần.</p>
+        <div data-extension-banner="modal"></div>
+      </div>
+    </div>
+
     <script src="./guide-download.js"></script>
     <script src="./auth-shared.js"></script>
+    <script src="./extension-install.js"></script>
     <script src="./zalo-links.js"></script>
     <script src="./group-import-client.js"></script>
     <script src="./group-import-wizard.js"></script>
