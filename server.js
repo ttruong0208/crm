@@ -34,6 +34,7 @@ const {
   revokeRefreshToken,
 } = require("./lib/refreshTokens");
 const { seedIfEmpty } = require("./lib/seed");
+const { ensurePlatformAdminUsers } = require("./lib/ensurePlatformAdmin");
 const { mergeGroups } = require("./lib/groupImport");
 const {
   normalizeCrmState,
@@ -227,6 +228,10 @@ async function ensureBootstrapped() {
       if (seeded) {
         console.log("Seeded demo users (admin/editor/responder).");
       }
+      const platform = await ensurePlatformAdminUsers();
+      if (platform.created || platform.updated) {
+        console.log(`Platform admin sync: created=${platform.created}, updated=${platform.updated}`);
+      }
       if (!process.env.VERCEL) {
         ensureGuidePdf()
           .then(() => console.log("User guide PDF ready (docs/Huong-dan-su-dung.pdf)"))
@@ -361,8 +366,9 @@ app.post("/api/login", async (req, res) => {
     }
 
     const appState = await getWorkspaceState(user);
+    const adminUser = { username: user.username, email: user.email };
     const trialBlock = assertTrialActive(appState.crmSettings);
-    if (trialBlock) {
+    if (trialBlock && !isPlatformAdmin(adminUser)) {
       return res.status(403).json(trialBlock);
     }
 

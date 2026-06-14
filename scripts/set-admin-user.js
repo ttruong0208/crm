@@ -6,8 +6,8 @@ const { normalizeCrmState } = require("../lib/crmExtensions");
 const { saveAppState } = require("../lib/db");
 const { startFreeTrial } = require("../lib/plans");
 
-const EMAIL = "truongthanhsbay@gmail.com";
-const PASSWORD = "111111";
+const EMAIL = process.env.PLATFORM_ADMIN_EMAIL || process.env.SUPER_ADMIN_EMAILS?.split(",")[0] || "truongthanhsbay@gmail.com";
+const PASSWORD = process.env.PLATFORM_ADMIN_BOOTSTRAP_PASSWORD || "111111";
 
 async function main() {
   await initDb();

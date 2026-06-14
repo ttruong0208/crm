@@ -1540,7 +1540,8 @@ function setAuthUi() {
   const roleLabels = { admin: "Quản trị", editor: "Người soạn tin", responder: "Người trả lời" };
   const label = roleLabels[currentUser.role] || currentUser.role;
   const emailPart = currentUser.email ? ` · ${currentUser.email}` : "";
-  refs.authInfo.textContent = `${currentUser.username}${emailPart} · ${label}`;
+  const platformPart = currentUser.isPlatformAdmin ? " · Quản trị hệ thống (xem tất cả khách)" : "";
+  refs.authInfo.textContent = `${currentUser.username}${emailPart} · ${label}${platformPart}`;
   refs.authInfo.classList.remove("error");
   applyAdminNavVisibility();
 }

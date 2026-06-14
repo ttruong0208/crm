@@ -73,6 +73,10 @@ function renderTeamUsersPanel() {
         Team của bạn: <strong>${teamUsers.length}/${plan?.maxUsers ?? "?"}</strong> user CRM
         ${isFreePlan ? " · gói FREE chỉ dùng một mình, không thêm nhân viên" : ""}.
       </p>
+      <p class="item-meta team-users-limit">
+        Bạn chỉ thấy team workspace của mình. Để <strong>xem tất cả khách đăng ký</strong>, đăng nhập bằng email có trong
+        <code>SUPER_ADMIN_EMAILS</code> trên Vercel (quản trị hệ thống).
+      </p>
       ${renderAccountsTable(
         teamUsers.map((u) => ({
           ...u,

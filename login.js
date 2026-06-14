@@ -64,7 +64,10 @@ async function handleLoginSubmit(event) {
     });
     const payload = await response.json().catch(() => ({}));
     if (response.status === 403 && payload.code === "EMAIL_NOT_VERIFIED") {
-      showLoginError("Email chưa xác minh. Hoàn tất đăng ký (nhập mã email) trước khi đăng nhập.");
+      const email = payload.email || loginId;
+      showLoginError(
+        `Email chưa xác minh. Vào trang nhập mã OTP: /verify-email.html?email=${encodeURIComponent(email)}`,
+      );
       return;
     }
     if (response.status === 403 && payload.code === "TRIAL_EXPIRED") {
