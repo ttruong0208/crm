@@ -8,16 +8,7 @@
     "api/index.js": {
       "maxDuration": 30,
       "memory": 1024,
-      "includeFiles": [
-        "*.html",
-        "*.css",
-        "*.js",
-        "assets/**",
-        "db/**",
-        "docs/**",
-        "lib/**",
-        "tools/**"
-      ]
+      "includeFiles": "*.html,*.css,*.js,assets/**,docs/**,tools/**"
     }
   }
 }
