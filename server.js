@@ -148,10 +148,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 function resolvePublicRoot() {
-  const candidates = [__dirname, path.join(__dirname, ".."), process.cwd()];
+  const candidates = [
+    path.join(__dirname, "public"),
+    path.join(__dirname, "..", "public"),
+    __dirname,
+    path.join(__dirname, ".."),
+    process.cwd(),
+  ];
   for (const dir of candidates) {
     try {
-      if (fs.existsSync(path.join(dir, "index.html"))) return dir;
+      if (fs.existsSync(path.join(dir, "styles.css"))) return dir;
     } catch {
       // ignore
     }
