@@ -2,6 +2,9 @@
 .env
 .env.*
 !.env.example
+!.env.vercel.example
+.env.vercel
+vercel-import.env
 
 # --- Dependencies ---
 node_modules/

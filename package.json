@@ -6,6 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "vercel-build": "node -e \"console.log('Vercel build OK')\"",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:init": "node scripts/init-db.js",

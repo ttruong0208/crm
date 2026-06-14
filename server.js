@@ -165,6 +165,47 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: "2mb" }));
 app.use(express.static(__dirname));
 
+let bootstrapPromise = null;
+async function ensureBootstrapped() {
+  if (!bootstrapPromise) {
+    bootstrapPromise = (async () => {
+      await initDb();
+      const seeded = await seedIfEmpty();
+      if (seeded) {
+        console.log("Seeded demo users (admin/editor/responder).");
+      }
+      if (!process.env.VERCEL) {
+        ensureGuidePdf()
+          .then(() => console.log("User guide PDF ready (docs/Huong-dan-su-dung.pdf)"))
+          .catch((err) => console.warn("User guide PDF skipped:", err.message));
+      }
+    })();
+  }
+  return bootstrapPromise;
+}
+
+app.use(async (req, res, next) => {
+  if (
+    req.method === "GET" &&
+    !req.path.startsWith("/api") &&
+    req.path !== "/" &&
+    path.extname(req.path)
+  ) {
+    return next();
+  }
+  try {
+    await ensureBootstrapped();
+    return next();
+  } catch (error) {
+    console.error("Bootstrap failed:", error);
+    return res.status(503).json({
+      error: "Database chưa sẵn sàng. Kiểm tra DATABASE_URL trên Vercel.",
+      detail: error.message,
+      code: "BOOTSTRAP_FAILED",
+    });
+  }
+});
+
 app.get("/api/health", async (_req, res) => {
   let dbOk = false;
   try {
@@ -1247,35 +1288,44 @@ app.get("/api/docs/huong-dan.pdf", async (_req, res) => {
 
 app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api")) return next();
-  res.sendFile(path.join(__dirname, "index.html"));
+  const indexPath = path.join(__dirname, "index.html");
+  res.sendFile(indexPath, (err) => {
+    if (err) next(err);
+  });
 });
 
-async function start() {
-  await initDb();
-  const seeded = await seedIfEmpty();
-  if (seeded) {
-    console.log("Seeded demo users (admin/editor/responder).");
-  }
-  ensureGuidePdf()
-    .then(() => console.log("User guide PDF ready (docs/Huong-dan-su-dung.pdf)"))
-    .catch((err) => console.warn("User guide PDF skipped:", err.message));
+app.use((err, _req, res, _next) => {
+  console.error("Unhandled error:", err);
+  if (res.headersSent) return;
+  res.status(500).json({
+    error: "Server error",
+    detail: process.env.VERCEL ? err.message : undefined,
+  });
+});
+
+module.exports = app;
+
+async function startServer() {
+  await ensureBootstrapped();
   app.listen(PORT, () => {
     console.log(`Zalo CRM MVP running at http://localhost:${PORT}`);
     console.log("Auth: JWT access + refresh tokens | DB: PostgreSQL");
   });
 }
 
-start().catch((error) => {
-  console.error("Server failed to start:", error.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error("Server failed to start:", error.message);
+    process.exit(1);
+  });
 
-process.on("SIGINT", async () => {
-  await closeDb();
-  process.exit(0);
-});
+  process.on("SIGINT", async () => {
+    await closeDb();
+    process.exit(0);
+  });
 
-process.on("SIGTERM", async () => {
-  await closeDb();
-  process.exit(0);
-});
+  process.on("SIGTERM", async () => {
+    await closeDb();
+    process.exit(0);
+  });
+}
