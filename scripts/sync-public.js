@@ -43,15 +43,33 @@ function copyDir(src, dest) {
   }
 }
 
-fs.mkdirSync(pub, { recursive: true });
-for (const file of rootFiles) {
-  const src = path.join(root, file);
-  if (fs.existsSync(src)) fs.copyFileSync(src, path.join(pub, file));
+async function main() {
+  fs.mkdirSync(pub, { recursive: true });
+  for (const file of rootFiles) {
+    const src = path.join(root, file);
+    if (fs.existsSync(src)) fs.copyFileSync(src, path.join(pub, file));
+  }
+  copyDir(path.join(root, "assets"), path.join(pub, "assets"));
+
+  try {
+    const { generateGuidePdf, PDF_PATH, PUBLIC_PDF_PATH } = require("../lib/generateGuidePdf");
+    await generateGuidePdf(PDF_PATH);
+    fs.mkdirSync(path.dirname(PUBLIC_PDF_PATH), { recursive: true });
+    fs.copyFileSync(PDF_PATH, PUBLIC_PDF_PATH);
+    console.log("Built guide PDF → public/docs/Huong-dan-su-dung.pdf");
+  } catch (err) {
+    console.warn("Guide PDF build skipped:", err.message);
+  }
+
+  copyDir(path.join(root, "docs"), path.join(pub, "docs"));
+  copyDir(path.join(root, "tools"), path.join(pub, "tools"));
+
+  require("./build-extension-zip");
+
+  console.log("Synced static files to public/");
 }
-copyDir(path.join(root, "assets"), path.join(pub, "assets"));
-copyDir(path.join(root, "docs"), path.join(pub, "docs"));
-copyDir(path.join(root, "tools"), path.join(pub, "tools"));
 
-require("./build-extension-zip");
-
-console.log("Synced static files to public/");
+main().catch((err) => {
+  console.error("sync-public failed:", err);
+  process.exit(1);
+});

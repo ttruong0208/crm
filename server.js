@@ -1332,10 +1332,18 @@ app.get("/api/docs/huong-dan.pdf", async (_req, res) => {
     const pdfPath = await ensureGuidePdf();
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", 'attachment; filename="Huong-dan-Zalo-CRM.pdf"');
-    return res.sendFile(pdfPath);
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    return res.sendFile(pdfPath, (err) => {
+      if (err) {
+        console.error("Guide PDF sendFile error:", err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: "Không gửi được PDF hướng dẫn" });
+        }
+      }
+    });
   } catch (error) {
     console.error("Guide PDF error:", error);
-    return res.status(500).json({ error: "Không tạo được PDF hướng dẫn" });
+    return res.status(500).json({ error: "Không tạo được PDF hướng dẫn", detail: error.message });
   }
 });
 
