@@ -1137,34 +1137,172 @@
     );
   }
 
+  function clampDockPos(x, y, w, h) {
+    const pad = 8;
+    const maxX = Math.max(pad, window.innerWidth - w - pad);
+    const maxY = Math.max(pad, window.innerHeight - h - pad);
+    return {
+      x: Math.min(maxX, Math.max(pad, x)),
+      y: Math.min(maxY, Math.max(pad, y)),
+    };
+  }
+
+  function applyDockLayout() {
+    const cfg = loadConfig();
+    const dock = document.getElementById("zalo-crm-dock");
+    const panel = document.getElementById("zalo-crm-sync-panel");
+    if (!dock) return;
+
+    const pos = cfg.dockPos;
+    if (pos && Number.isFinite(pos.x) && Number.isFinite(pos.y)) {
+      const c = clampDockPos(pos.x, pos.y, dock.offsetWidth || 120, dock.offsetHeight || 44);
+      dock.style.left = `${c.x}px`;
+      dock.style.top = `${c.y}px`;
+      dock.style.right = "auto";
+      dock.style.bottom = "auto";
+    } else {
+      dock.style.left = "auto";
+      dock.style.top = "auto";
+      dock.style.right = "20px";
+      dock.style.bottom = "20px";
+    }
+
+    if (!panel) return;
+    const dockRect = dock.getBoundingClientRect();
+    const panelW = panel.offsetWidth || 300;
+    const panelH = panel.offsetHeight || 280;
+    let left = dockRect.left;
+    let top = dockRect.top - panelH - 10;
+    if (top < 8) top = dockRect.bottom + 10;
+    left = Math.max(8, Math.min(window.innerWidth - panelW - 8, left));
+    top = Math.max(8, Math.min(window.innerHeight - panelH - 8, top));
+    panel.style.left = `${left}px`;
+    panel.style.top = `${top}px`;
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+  }
+
+  function saveDockPosition(dock) {
+    const rect = dock.getBoundingClientRect();
+    const c = clampDockPos(rect.left, rect.top, dock.offsetWidth, dock.offsetHeight);
+    const cfg = { ...loadConfig(), dockPos: c };
+    saveConfig(cfg);
+    if (typeof chrome !== "undefined" && chrome.storage?.sync) {
+      chrome.storage.sync.set({ dockPos: c });
+    }
+  }
+
+  function bindDockDrag(dock) {
+    const btn = dock.querySelector("#zalo-crm-dock-toggle");
+    if (!btn || btn.dataset.dragBound === "1") return;
+    btn.dataset.dragBound = "1";
+
+    let pointerDown = false;
+    let dragMoved = false;
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
+    const DRAG_THRESHOLD = 6;
+
+    function togglePanel() {
+      const isOpen = Boolean(document.getElementById("zalo-crm-sync-panel"));
+      if (isOpen) setPanelHidden(true);
+      else setPanelHidden(false);
+    }
+
+    function onMove(e) {
+      if (!pointerDown) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!dragMoved && Math.abs(dx) + Math.abs(dy) < DRAG_THRESHOLD) return;
+      if (!dragMoved) {
+        dragMoved = true;
+        btn.style.cursor = "grabbing";
+      }
+      const c = clampDockPos(
+        startLeft + dx,
+        startTop + dy,
+        dock.offsetWidth || 120,
+        dock.offsetHeight || 44,
+      );
+      dock.style.left = `${c.x}px`;
+      dock.style.top = `${c.y}px`;
+      dock.style.right = "auto";
+      dock.style.bottom = "auto";
+      applyDockLayout();
+    }
+
+    function onUp() {
+      if (!pointerDown) return;
+      pointerDown = false;
+      btn.style.cursor = "grab";
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      if (dragMoved) {
+        saveDockPosition(dock);
+      } else {
+        togglePanel();
+      }
+    }
+
+    btn.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
+      const rect = dock.getBoundingClientRect();
+      pointerDown = true;
+      dragMoved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      if (loadConfig().dockPos) {
+        dock.style.left = `${startLeft}px`;
+        dock.style.top = `${startTop}px`;
+        dock.style.right = "auto";
+        dock.style.bottom = "auto";
+      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
+  }
+
   function updateFloatingDock() {
     let dock = document.getElementById("zalo-crm-dock");
     if (!dock) {
       dock = document.createElement("div");
       dock.id = "zalo-crm-dock";
       dock.style.cssText =
-        "position:fixed;bottom:20px;right:20px;z-index:2147483647;display:flex;flex-direction:column;align-items:flex-end;gap:8px;font:600 13px Inter,system-ui,sans-serif;pointer-events:none";
+        "position:fixed;bottom:20px;right:20px;z-index:2147483647;display:flex;flex-direction:column;align-items:flex-end;gap:4px;font:600 13px Inter,system-ui,sans-serif;pointer-events:none";
       document.body.appendChild(dock);
     }
     const panelOpen = Boolean(document.getElementById("zalo-crm-sync-panel"));
-    dock.innerHTML = `
-      <button type="button" id="zalo-crm-dock-toggle" title="${panelOpen ? "Ẩn panel CRM" : "Mở panel CRM"}" style="
-        pointer-events:auto;
-        padding:10px 16px;
-        border-radius:999px;
-        border:none;
-        cursor:pointer;
-        font:inherit;
-        font-weight:700;
-        color:#fff;
-        background:${panelOpen ? "#dc2626" : "#2563eb"};
-        box-shadow:0 6px 20px rgba(0,0,0,.22);
-      ">${panelOpen ? "▲ Ẩn CRM" : "▼ Mở CRM"}</button>
-    `;
-    dock.querySelector("#zalo-crm-dock-toggle").onclick = () => {
-      if (panelOpen) setPanelHidden(true);
-      else setPanelHidden(false);
-    };
+    let btn = dock.querySelector("#zalo-crm-dock-toggle");
+    let hint = dock.querySelector("#zalo-crm-dock-hint");
+    if (!btn) {
+      dock.innerHTML = `
+        <button type="button" id="zalo-crm-dock-toggle" style="
+          pointer-events:auto;
+          padding:10px 16px;
+          border-radius:999px;
+          border:none;
+          cursor:grab;
+          font:inherit;
+          font-weight:700;
+          color:#fff;
+          box-shadow:0 6px 20px rgba(0,0,0,.22);
+        "></button>
+        <span id="zalo-crm-dock-hint" style="pointer-events:none;font-size:9px;color:#64748b;font-weight:500;background:rgba(255,255,255,.92);padding:2px 6px;border-radius:4px">Giữ chuột trái + kéo để di chuyển</span>
+      `;
+      btn = dock.querySelector("#zalo-crm-dock-toggle");
+      hint = dock.querySelector("#zalo-crm-dock-hint");
+    }
+    btn.textContent = panelOpen ? "▲ Ẩn CRM" : "▼ Mở CRM";
+    btn.style.background = panelOpen ? "#dc2626" : "#2563eb";
+    btn.title = "Bấm 1 lần: mở/ẩn CRM · Giữ chuột trái + kéo: di chuyển nút";
+    if (hint) hint.textContent = "Bấm để mở/ẩn · giữ + kéo để đổi chỗ";
+
+    bindDockDrag(dock);
+    applyDockLayout();
   }
 
   function setPanelHidden(hidden) {
@@ -1195,7 +1333,7 @@
     panel = document.createElement("div");
     panel.id = panelId;
     panel.style.cssText =
-      "position:fixed;bottom:64px;right:20px;z-index:2147483646;background:#fff;border:1px solid #cbd5e1;padding:12px;border-radius:12px;box-shadow:0 10px 32px rgba(0,0,0,.18);font:13px Inter,system-ui,sans-serif;max-width:300px;max-height:70vh;overflow:auto";
+      "position:fixed;z-index:2147483646;background:#fff;border:1px solid #cbd5e1;padding:12px;border-radius:12px;box-shadow:0 10px 32px rgba(0,0,0,.18);font:13px Inter,system-ui,sans-serif;max-width:300px;max-height:70vh;overflow:auto";
 
     panel.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
@@ -1214,10 +1352,11 @@
       <button id="zcs-save" style="padding:8px 10px;margin-right:6px;cursor:pointer;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:600">Lưu cấu hình</button>
       <button type="button" id="zcs-hide" style="padding:8px 10px;cursor:pointer;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;border-radius:6px;font-weight:700">▲ Ẩn CRM</button>
       <span id="zcs-status" style="display:block;font-size:11px;color:#64748b;margin-top:6px"></span>
-      <span style="display:block;font-size:10px;color:#94a3b8;margin-top:4px">v1.7.4 · Nút đỏ góc phải dưới = ẩn/hiện</span>
+      <span style="display:block;font-size:10px;color:#94a3b8;margin-top:4px">v1.7.7 · Bấm nút CRM = mở/ẩn · giữ + kéo = đổi chỗ</span>
     `;
 
     document.body.appendChild(panel);
+    applyDockLayout();
     updateFloatingDock();
 
     const statusEl = panel.querySelector("#zcs-status");
