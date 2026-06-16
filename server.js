@@ -35,6 +35,9 @@ const {
 } = require("./lib/refreshTokens");
 const { seedIfEmpty } = require("./lib/seed");
 const { ensurePlatformAdminUsers } = require("./lib/ensurePlatformAdmin");
+const { registerAiRoutes, applyLeadAnalysisToState } = require("./lib/ai/routes");
+const { analyzeLeadFromMessages } = require("./lib/ai/leadScore");
+const { assertAiAllowed, incrementAiUsage } = require("./lib/ai/usage");
 const { mergeGroups } = require("./lib/groupImport");
 const {
   normalizeCrmState,
@@ -1222,7 +1225,26 @@ app.post("/api/sync/interaction", syncTokenRequired, async (req, res) => {
       summary: String(text).slice(0, 500),
       by: "zalo-extension",
     });
-    const nextState = applyAutoRules(normalizeCrmState({ ...state, role: state.role || "admin" }));
+    let nextState = applyAutoRules(normalizeCrmState({ ...state, role: state.role || "admin" }));
+
+    const messages = Array.isArray(req.body?.messages) ? req.body.messages : [];
+    if (messages.length && req.body?.autoAiLeadScore !== false) {
+      const aiBlock = assertAiAllowed(nextState, "aiLeadScore");
+      if (!aiBlock) {
+        try {
+          const analysis = await analyzeLeadFromMessages({
+            groupName: group.name,
+            messages,
+            interactions: nextState.groups[gIdx].interactions,
+          });
+          nextState = applyLeadAnalysisToState(nextState, group.id, analysis);
+          nextState.crmSettings = incrementAiUsage(nextState.crmSettings, "aiLeadScore");
+        } catch (e) {
+          console.warn("Auto AI lead score skipped:", e.message);
+        }
+      }
+    }
+
     await saveAppState(req.syncUser.username, nextState);
     pushCrmWebhook(nextState, "zalo.interaction", { groupId: group.id, groupName: group.name, type });
     return res.json({ ok: true, groupId: group.id });
@@ -1231,6 +1253,8 @@ app.post("/api/sync/interaction", syncTokenRequired, async (req, res) => {
     return res.status(500).json({ error: "Failed to log interaction" });
   }
 });
+
+registerAiRoutes(app, authRequired);
 
 app.post("/api/crm/accounts/:id/sync-token", authRequired, async (req, res) => {
   try {

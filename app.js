@@ -36,6 +36,7 @@ let currentUser = null;
 let groupImportWizard = null;
 let crmFullUi = null;
 let crmInboxUi = null;
+let aiUi = null;
 let focusedMessageTaskId = null;
 let syncPollTimer = null;
 let groupListTypeFilter = "group";
@@ -167,6 +168,21 @@ async function initApp() {
     getState: () => state,
     escapeHtml,
     onOpenProfile: (id) => crmFullUi?.openProfile(id),
+    onAiReply: (groupId, preset) => aiUi?.openReplyModal(groupId, preset),
+  });
+  aiUi = initAiUi({
+    getState: () => state,
+    refreshState: async () => {
+      const next = await loadState();
+      state = next;
+      window.__crmStateRef = state;
+      state.role = currentUser.role;
+    },
+    renderAll,
+    escapeHtml,
+    insertIntoFocusedMessage,
+    getActiveCampaignId: () => state.activeCampaignId,
+    getCurrentUser: () => currentUser,
   });
   bindTaskTemplateBar();
   renderAll();
@@ -1533,6 +1549,7 @@ function renderAll() {
   renderTasks();
   crmFullUi?.render();
   crmInboxUi?.render();
+  aiUi?.refresh?.();
   if (typeof applyPlanUi === "function") applyPlanUi();
 }
 
@@ -2577,10 +2594,19 @@ function renderTaskCard(task, group) {
           </select>
         </div>
       </div>
+      ${group?.aiSummary ? `<p class="ai-inline-summary item-meta">🤖 ${escapeHtml(truncateText(group.aiSummary, 100))}</p>` : ""}
       ${group ? `<div class="task-card-toolbar">${zaloGroupActionsHtml(group, task)}</div>` : ""}
       <details class="task-card-compose"${msgPreview ? " open" : ""}>
         <summary class="task-compose-summary">${escapeHtml(composeSummary)}</summary>
         <textarea data-field="message" data-id="${task.id}" rows="2" placeholder="Nhập nội dung tin nhắn..." ${disabled}>${escapeHtml(task.message)}</textarea>
+        ${
+          disabled
+            ? ""
+            : `<div class="ai-btn-row task-ai-row">
+          <button type="button" class="secondary mini" data-ai-content-task="${task.id}">✨ AI soạn tin</button>
+          ${group ? `<button type="button" class="secondary mini" data-ai-lead-score="${group.id}">🎯 Chấm lead</button>` : ""}
+        </div>`
+        }
       </details>
       <details class="task-card-more">
         <summary>Chi tiết · follow-up · ghi chú</summary>

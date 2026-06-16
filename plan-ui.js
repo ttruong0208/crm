@@ -38,6 +38,11 @@ function planUpgradeMessage(feature) {
     multiZalo: "Nhiều tài khoản Zalo Web",
     groups: "Thêm nhóm Zalo",
     users: "Thêm user CRM",
+    aiContent: "AI soạn tin chiến dịch",
+    aiLeadScore: "AI chấm lead / phân loại khách",
+    aiSmartReply: "AI gợi ý trả lời inbox",
+    aiAnalytics: "AI phân tích chiến dịch",
+    aiLimit: "Lượt AI trong ngày",
   };
   const label = names[feature] || feature;
   const planName = planSnapshot?.plan?.name || "Cơ bản";

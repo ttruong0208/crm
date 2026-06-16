@@ -13,8 +13,9 @@ function setMsg(text, isError) {
 
 function saveConfig() {
   return new Promise((resolve) => {
+    const rawUrl = fields.crmUrl.value.trim();
     const payload = {
-      crmBaseUrl: fields.crmUrl.value.trim() || "http://localhost:3000",
+      crmBaseUrl: typeof resolveCrmBaseUrl === "function" ? resolveCrmBaseUrl(rawUrl) : rawUrl || "https://crm-alpha-henna-85.vercel.app",
       syncToken: fields.syncToken.value.trim(),
       enabled: fields.enabled.checked,
     };
@@ -23,14 +24,22 @@ function saveConfig() {
 }
 
 chrome.storage.sync.get(["crmBaseUrl", "syncToken", "enabled"], (stored) => {
-  fields.crmUrl.value = stored.crmBaseUrl || "http://localhost:3000";
+  fields.crmUrl.value =
+    typeof resolveCrmBaseUrl === "function"
+      ? resolveCrmBaseUrl(stored.crmBaseUrl)
+      : stored.crmBaseUrl || "https://crm-alpha-henna-85.vercel.app";
   fields.syncToken.value = stored.syncToken || "";
   fields.enabled.checked = stored.enabled !== false;
 });
 
 document.getElementById("save").onclick = async () => {
-  await saveConfig();
-  setMsg("Đã lưu mã. Tiếp: bấm «Mở chat.zalo.me» rồi «Quét nhóm → gửi CRM».");
+  const saved = await saveConfig();
+  fields.crmUrl.value = saved.crmBaseUrl;
+  if (!saved.syncToken) {
+    setMsg("Đã lưu URL — cần dán mã đồng bộ từ CRM (menu Đồng bộ Zalo).", true);
+    return;
+  }
+  setMsg("Đã lưu — mở chat.zalo.me, dán mã vào panel Zalo CRM, bấm Lưu cấu hình để kiểm tra.");
 };
 
 document.getElementById("open-zalo").onclick = () => {

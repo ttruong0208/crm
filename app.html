@@ -114,6 +114,23 @@
               </div>
               <div id="assignee-analytics" class="analytics-table-wrap"></div>
             </section>
+            <section class="card card-flat ai-panel" id="ai-analytics-panel">
+              <div class="section-head">
+                <h3>🤖 AI phân tích chiến dịch</h3>
+                <p class="section-desc">Hỏi bằng tiếng Việt — AI đọc số liệu CRM và trả lời</p>
+              </div>
+              <p id="ai-usage-line" class="item-meta ai-usage-line"></p>
+              <div class="ai-quick-chips" id="ai-analytics-chips">
+                <button type="button" class="secondary mini" data-ai-analytics-q="Tỉ lệ phản hồi chiến dịch hiện tại?">Tỉ lệ phản hồi</button>
+                <button type="button" class="secondary mini" data-ai-analytics-q="Nhân viên nào xử lý chậm nhất?">Ai chậm nhất?</button>
+                <button type="button" class="secondary mini" data-ai-analytics-q="Có bao nhiêu lead nóng và cần ưu tiên gì?">Lead nóng</button>
+              </div>
+              <form id="ai-analytics-form" class="ai-inline-form">
+                <input id="ai-analytics-question" type="text" placeholder="VD: Tuần này chiến dịch nào hiệu quả nhất?" />
+                <button type="submit" id="ai-analytics-submit">Hỏi AI</button>
+              </form>
+              <div id="ai-analytics-answer" class="ai-answer-box hidden"></div>
+            </section>
           </div>
 
           <div class="app-view" id="view-users" data-view="users">
@@ -160,6 +177,15 @@
           </label>
           <button type="button" class="secondary mini" id="task-insert-apply">Chèn vào ô đang chọn</button>
         </div>
+        <details class="ai-panel ai-content-panel" id="ai-content-panel">
+          <summary class="ai-panel-summary">✨ AI soạn tin chiến dịch</summary>
+          <p class="item-meta">Nhập ý chính — AI tạo 3–5 phiên bản tin + gợi ý CTA</p>
+          <form id="ai-content-form" class="ai-inline-form">
+            <textarea id="ai-content-brief" rows="2" placeholder="VD: Nhắc khách hội thảo ngày 15/6, ưu đãi 10% cho nhóm Zalo…"></textarea>
+            <button type="submit" id="ai-content-submit">Tạo mẫu tin</button>
+          </form>
+          <div id="ai-content-results" class="ai-results hidden"></div>
+        </details>
         <div class="toolbar toolbar--filters">
           <label>
             Chiến dịch
@@ -624,6 +650,20 @@
               <button type="button" id="crm-export-json" class="secondary">Tải JSON export (ERP)</button>
               <p class="item-meta">API: <code>GET /api/export/crm</code> · Events: scan, sent, import, interaction</p>
             </div>
+            <div class="crm-full-block ai-knowledge-block" id="ai-knowledge-block">
+              <h3>🤖 Kho tri thức AI (Smart Reply)</h3>
+              <p class="item-meta">FAQ sản phẩm · giá · chính sách — AI dùng khi gợi ý trả lời inbox</p>
+              <ul id="ai-knowledge-list" class="list ai-knowledge-list"></ul>
+              <form id="ai-knowledge-form" class="stack crm-mini-form">
+                <input type="hidden" id="ai-knowledge-id" />
+                <input id="ai-knowledge-title" placeholder="Tiêu đề (VD: Bảng giá gói Pro)" />
+                <textarea id="ai-knowledge-text" rows="4" placeholder="Nội dung FAQ / sản phẩm…" required></textarea>
+                <div class="crm-inline-row">
+                  <button type="submit">Lưu tài liệu</button>
+                  <button type="button" class="secondary" id="ai-knowledge-reset">Hủy / mới</button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -658,6 +698,14 @@
               </div>
             </label>
             <div><strong>Lịch sử tương tác (CRM ghi nhận)</strong><ul id="crm-profile-interactions" class="list"></ul></div>
+            <div id="crm-profile-ai" class="ai-profile-panel">
+              <strong>AI hồ sơ</strong>
+              <p id="crm-profile-ai-meta" class="item-meta"></p>
+              <div class="ai-btn-row">
+                <button type="button" class="secondary mini" id="crm-profile-ai-score">🎯 Chấm lead</button>
+                <button type="button" class="secondary mini" id="crm-profile-ai-summarize">📝 Tóm tắt</button>
+              </div>
+            </div>
             <div class="crm-modal-actions">
               <button type="submit">Lưu hồ sơ</button>
               <button type="button" class="secondary" id="crm-profile-close">Đóng</button>
@@ -684,6 +732,21 @@
       </div>
     </div>
 
+    <div id="ai-reply-modal" class="crm-modal hidden" role="dialog" aria-labelledby="ai-reply-modal-title">
+      <div class="crm-modal-card crm-modal-wide">
+        <h3 id="ai-reply-modal-title">🤖 Gợi ý trả lời AI</h3>
+        <p id="ai-reply-group-name" class="item-meta"></p>
+        <label>Tin khách cần trả lời
+          <textarea id="ai-reply-incoming" rows="3" placeholder="Dán tin nhắn khách…"></textarea>
+        </label>
+        <button type="button" id="ai-reply-generate">Tạo gợi ý</button>
+        <div id="ai-reply-results" class="ai-results hidden"></div>
+        <div class="crm-modal-actions">
+          <button type="button" class="secondary" id="ai-reply-close">Đóng</button>
+        </div>
+      </div>
+    </div>
+
     <script src="./guide-download.js"></script>
     <script src="./auth-shared.js"></script>
     <script src="./extension-install.js"></script>
@@ -692,6 +755,7 @@
     <script src="./group-import-wizard.js"></script>
     <script src="./crm-full-ui.js"></script>
     <script src="./crm-inbox-ui.js"></script>
+    <script src="./ai-ui.js"></script>
     <script src="./plan-ui.js"></script>
     <script src="./users-ui.js"></script>
     <script src="./app.js"></script>

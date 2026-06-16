@@ -270,6 +270,7 @@ function initCrmFullUi(deps) {
       .map((ix) => `<li class="item-meta">${new Date(ix.at).toLocaleString()} — ${escapeHtml(ix.summary)}</li>`)
       .join("") || `<li class="item-meta">Chưa có lịch sử ghi nhận.</li>`;
     els.profileModal.classList.remove("hidden");
+    document.dispatchEvent(new CustomEvent("crm-profile-opened", { detail: { groupId: g.id } }));
   }
 
   function closeProfile() {

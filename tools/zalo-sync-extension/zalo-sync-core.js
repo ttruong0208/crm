@@ -15,14 +15,104 @@
   function loadConfig() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
+      const cfg = raw ? JSON.parse(raw) : {};
+      const resolved = typeof resolveCrmBaseUrl === "function"
+        ? resolveCrmBaseUrl(cfg.crmBaseUrl)
+        : cfg.crmBaseUrl || "https://crm-alpha-henna-85.vercel.app";
+      if (cfg.crmBaseUrl !== resolved) {
+        cfg.crmBaseUrl = resolved;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+        if (typeof chrome !== "undefined" && chrome.storage?.sync) {
+          chrome.storage.sync.set({ crmBaseUrl: resolved });
+        }
+      }
+      return cfg;
     } catch {
-      return {};
+      return {
+        crmBaseUrl:
+          typeof ZALO_CRM_DEFAULT_URL !== "undefined"
+            ? ZALO_CRM_DEFAULT_URL
+            : "https://crm-alpha-henna-85.vercel.app",
+      };
     }
   }
 
   function saveConfig(config) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  }
+
+  function normalizeCrmBaseUrl(raw) {
+    if (typeof resolveCrmBaseUrl === "function") return resolveCrmBaseUrl(raw);
+    const fallback =
+      typeof ZALO_CRM_DEFAULT_URL !== "undefined"
+        ? ZALO_CRM_DEFAULT_URL
+        : "https://crm-alpha-henna-85.vercel.app";
+    let url = String(raw || fallback).trim().replace(/\/$/, "");
+    if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname.endsWith(".vercel.app") && parsed.protocol === "http:") {
+        parsed.protocol = "https:";
+        url = parsed.origin;
+      }
+    } catch {
+      /* keep as-is */
+    }
+    return url;
+  }
+
+  function explainFetchError(error, crmBase) {
+    const msg = String(error?.message || error || "");
+    if (/failed to fetch|networkerror|load failed/i.test(msg)) {
+      if (/localhost|127\.0\.0\.1/i.test(crmBase)) {
+        return "Không kết nối được CRM — URL đang là localhost. Đổi thành https://crm-alpha-henna-85.vercel.app (hoặc domain CRM của bạn).";
+      }
+      if (/^http:\/\//i.test(crmBase)) {
+        return "Không kết nối được CRM — phải dùng https:// (Zalo Web chặn gọi http).";
+      }
+      return `Không kết nối được CRM tại ${crmBase} — kiểm tra URL, mạng, hoặc CRM đang deploy.`;
+    }
+    return msg || "Lỗi kết nối CRM";
+  }
+
+  async function crmFetch(crmBase, path, options = {}) {
+    const base = normalizeCrmBaseUrl(crmBase);
+    try {
+      return await fetch(`${base}${path}`, options);
+    } catch (error) {
+      throw new Error(explainFetchError(error, base));
+    }
+  }
+
+  async function testCrmConnection(config) {
+    const cfg = config || loadConfig();
+    const crmBase = normalizeCrmBaseUrl(cfg.crmBaseUrl);
+    const syncToken = String(cfg.syncToken || "").trim();
+    if (!syncToken) {
+      return { ok: false, error: "Chưa có mã đồng bộ — copy từ CRM → Đồng bộ Zalo → Tạo mã." };
+    }
+
+    const health = await crmFetch(crmBase, "/api/health");
+    if (!health.ok) {
+      return { ok: false, error: `CRM không phản hồi (${health.status}) — kiểm tra URL: ${crmBase}` };
+    }
+
+    const heartbeat = await crmFetch(crmBase, "/api/sync/heartbeat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Zalo-Sync-Token": syncToken,
+      },
+      body: JSON.stringify({ extensionVersion: EXTENSION_VERSION, browser: navigator.userAgent }),
+    });
+    const payload = await heartbeat.json().catch(() => ({}));
+    if (!heartbeat.ok) {
+      return {
+        ok: false,
+        error: payload.error || "Mã đồng bộ sai hoặc hết hạn — vào CRM tạo mã mới.",
+      };
+    }
+    return { ok: true, crmBase };
   }
 
   function normalizeName(value) {
@@ -530,7 +620,7 @@
 
   async function pushGroupsScanToCrm(groups, config) {
     const cfg = config || loadConfig();
-    const crmBase = (cfg.crmBaseUrl || "http://localhost:3000").replace(/\/$/, "");
+    const crmBase = normalizeCrmBaseUrl(cfg.crmBaseUrl);
     const syncToken = cfg.syncToken || "";
     if (!syncToken) {
       return { ok: false, error: "Chưa cấu hình mã đồng bộ CRM" };
@@ -543,7 +633,7 @@
     const counts = countChatTypes(groups);
     const payloadGroups = groups.map((g) => ({ ...g }));
 
-    const response = await fetch(`${crmBase}/api/sync/scan-groups`, {
+    const response = await crmFetch(crmBase, "/api/sync/scan-groups", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -650,11 +740,11 @@
 
   async function notifyCrmInteraction(chatInfo, config, summary, type) {
     const cfg = config || loadConfig();
-    const crmBase = (cfg.crmBaseUrl || "http://localhost:3000").replace(/\/$/, "");
+    const crmBase = normalizeCrmBaseUrl(cfg.crmBaseUrl);
     const syncToken = cfg.syncToken || "";
     if (!syncToken) return { ok: false };
     try {
-      await fetch(`${crmBase}/api/sync/interaction`, {
+      await crmFetch(crmBase, "/api/sync/interaction", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -676,7 +766,7 @@
 
   async function notifyCrmSent(chatInfo, config) {
     const cfg = config || loadConfig();
-    const crmBase = (cfg.crmBaseUrl || "http://localhost:3000").replace(/\/$/, "");
+    const crmBase = normalizeCrmBaseUrl(cfg.crmBaseUrl);
     const syncToken = cfg.syncToken || "";
     if (!syncToken) {
       return { ok: false, error: "Chưa cấu hình mã đồng bộ CRM" };
@@ -692,14 +782,19 @@
       source: "zalo-web",
     };
 
-    const response = await fetch(`${crmBase}/api/sync/zalo-sent`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Zalo-Sync-Token": syncToken,
-      },
-      body: JSON.stringify(body),
-    });
+    let response;
+    try {
+      response = await crmFetch(crmBase, "/api/sync/zalo-sent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Zalo-Sync-Token": syncToken,
+        },
+        body: JSON.stringify(body),
+      });
+    } catch (error) {
+      return { ok: false, error: error.message || "Không kết nối được CRM" };
+    }
 
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -717,11 +812,11 @@
 
   async function sendHeartbeat(config) {
     const cfg = config || loadConfig();
-    const crmBase = (cfg.crmBaseUrl || "http://localhost:3000").replace(/\/$/, "");
+    const crmBase = normalizeCrmBaseUrl(cfg.crmBaseUrl);
     const syncToken = cfg.syncToken || "";
     if (!syncToken || cfg.enabled === false) return { ok: false };
     try {
-      const response = await fetch(`${crmBase}/api/sync/heartbeat`, {
+      const response = await crmFetch(crmBase, "/api/sync/heartbeat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1056,7 +1151,7 @@
     panel.innerHTML = `
       <strong style="display:block;margin-bottom:6px">Zalo CRM</strong>
       <label style="display:block;font-size:11px;color:#64748b;margin-bottom:4px">URL CRM</label>
-      <input id="zcs-crm-url" style="width:100%;margin-bottom:8px;padding:6px;box-sizing:border-box" value="${cfg.crmBaseUrl || "http://localhost:3000"}" />
+      <input id="zcs-crm-url" style="width:100%;margin-bottom:8px;padding:6px;box-sizing:border-box" value="${cfg.crmBaseUrl || (typeof ZALO_CRM_DEFAULT_URL !== "undefined" ? ZALO_CRM_DEFAULT_URL : "https://crm-alpha-henna-85.vercel.app")}" placeholder="https://crm-alpha-henna-85.vercel.app" />
       <label style="display:block;font-size:11px;color:#64748b;margin-bottom:4px">Mã đồng bộ (copy từ CRM)</label>
       <input id="zcs-token" style="width:100%;margin-bottom:8px;padding:6px;box-sizing:border-box" value="${cfg.syncToken || ""}" placeholder="dán mã..." />
       <button id="zcs-scan" style="width:100%;padding:8px 10px;margin-bottom:6px;cursor:pointer;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:600">Quét nhóm → gửi CRM</button>
@@ -1072,13 +1167,14 @@
 
     const statusEl = panel.querySelector("#zcs-status");
 
-    panel.querySelector("#zcs-save").onclick = () => {
+    panel.querySelector("#zcs-save").onclick = async () => {
       const next = {
-        crmBaseUrl: panel.querySelector("#zcs-crm-url").value.trim() || "http://localhost:3000",
+        crmBaseUrl: normalizeCrmBaseUrl(panel.querySelector("#zcs-crm-url").value.trim()),
         syncToken: panel.querySelector("#zcs-token").value.trim(),
         enabled: panel.querySelector("#zcs-enabled").checked,
         campaignId: cfg.campaignId || null,
       };
+      panel.querySelector("#zcs-crm-url").value = next.crmBaseUrl;
       saveConfig(next);
       if (typeof chrome !== "undefined" && chrome.storage?.sync) {
         chrome.storage.sync.set({
@@ -1088,8 +1184,22 @@
           campaignId: next.campaignId || "",
         });
       }
-      statusEl.textContent = "Đã lưu cấu hình.";
       statusEl.style.color = "#64748b";
+      statusEl.textContent = "Đang kiểm tra kết nối CRM…";
+      try {
+        const test = await testCrmConnection(next);
+        if (!test.ok) {
+          statusEl.textContent = test.error || "Không kết nối được CRM";
+          statusEl.style.color = "#dc2626";
+          return;
+        }
+        statusEl.textContent = `✓ Đã lưu — CRM OK (${test.crmBase})`;
+        statusEl.style.color = "#16a34a";
+        startHeartbeat(next);
+      } catch (e) {
+        statusEl.textContent = e.message || "Không kết nối được CRM";
+        statusEl.style.color = "#dc2626";
+      }
     };
 
     panel.querySelector("#zcs-probe").onclick = async () => {
@@ -1126,7 +1236,7 @@
 
     panel.querySelector("#zcs-scan").onclick = async () => {
       const next = {
-        crmBaseUrl: panel.querySelector("#zcs-crm-url").value.trim() || "http://localhost:3000",
+        crmBaseUrl: normalizeCrmBaseUrl(panel.querySelector("#zcs-crm-url").value.trim()),
         syncToken: panel.querySelector("#zcs-token").value.trim(),
         enabled: panel.querySelector("#zcs-enabled").checked,
         campaignId: cfg.campaignId || null,
@@ -1196,6 +1306,8 @@
     countChatTypes,
     scanAllGroups,
     pushGroupsScanToCrm,
+    testCrmConnection,
+    normalizeCrmBaseUrl,
     sendHeartbeat,
     startHeartbeat,
     loadConfig,

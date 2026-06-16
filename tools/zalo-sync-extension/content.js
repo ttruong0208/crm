@@ -1,6 +1,10 @@
 chrome.storage.sync.get(["crmBaseUrl", "syncToken", "enabled", "campaignId"], (stored) => {
+  const base =
+    typeof resolveCrmBaseUrl === "function"
+      ? resolveCrmBaseUrl(stored.crmBaseUrl)
+      : stored.crmBaseUrl || "https://crm-alpha-henna-85.vercel.app";
   ZaloCrmSync.saveConfig({
-    crmBaseUrl: stored.crmBaseUrl || "http://localhost:3000",
+    crmBaseUrl: base,
     syncToken: stored.syncToken || "",
     enabled: stored.enabled !== false,
     campaignId: stored.campaignId || null,
@@ -25,7 +29,7 @@ chrome.storage.sync.get(["crmBaseUrl", "syncToken", "enabled", "campaignId"], (s
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== "sync") return;
   const cfg = ZaloCrmSync.loadConfig();
-  if (changes.crmBaseUrl) cfg.crmBaseUrl = changes.crmBaseUrl.newValue;
+  if (changes.crmBaseUrl) cfg.crmBaseUrl = resolveCrmBaseUrl?.(changes.crmBaseUrl.newValue) || changes.crmBaseUrl.newValue;
   if (changes.syncToken) cfg.syncToken = changes.syncToken.newValue;
   if (changes.enabled) cfg.enabled = changes.enabled.newValue !== false;
   if (changes.campaignId) cfg.campaignId = changes.campaignId.newValue || null;

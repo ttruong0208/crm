@@ -1,5 +1,5 @@
 function initCrmInboxUi(deps) {
-  const { getState, escapeHtml, onOpenProfile } = deps;
+  const { getState, escapeHtml, onOpenProfile, onAiReply } = deps;
   const wrap = document.getElementById("crm-inbox-list");
   const accountFilter = document.getElementById("crm-inbox-account");
   const searchInput = document.getElementById("crm-inbox-search");
@@ -55,17 +55,29 @@ function initCrmInboxUi(deps) {
               <strong>${escapeHtml(g.name)}</strong>
               <span class="badge">${escapeHtml(type)}</span>
               <span class="badge">${escapeHtml(segmentLabel(g.segment))}</span>
+              ${g.aiPriority ? `<span class="badge badge--${escapeHtml(g.aiPriority)}">AI ${escapeHtml(g.aiPriority)}</span>` : ""}
               <div class="item-meta">${escapeHtml(accountName(g.zaloAccountId))}${g.phone ? ` · ${escapeHtml(g.phone)}` : ""}</div>
               <div class="item-meta crm-inbox-preview">${escapeHtml(preview)}</div>
+              ${g.aiSummary ? `<div class="item-meta ai-inline-summary">🤖 ${escapeHtml(String(g.aiSummary).slice(0, 100))}${String(g.aiSummary).length > 100 ? "…" : ""}</div>` : ""}
               ${typeof buildZaloChatUrl === "function" ? `<a href="${escapeHtml(buildZaloChatUrl(g))}" target="_blank" rel="noopener" class="zalo-open-chat">💬 Mở Zalo</a>` : ""}
             </div>
-            <button type="button" class="secondary mini" data-inbox-profile="${g.id}">Hồ sơ</button>
+            <div class="crm-inbox-actions">
+              <button type="button" class="secondary mini" data-inbox-ai-reply="${g.id}">🤖 Trả lời AI</button>
+              <button type="button" class="secondary mini" data-inbox-profile="${g.id}">Hồ sơ</button>
+            </div>
           </li>`;
         })
         .join("") || `<li class="item-meta">Không có hội thoại.</li>`;
   }
 
   wrap.addEventListener("click", (e) => {
+    const aiBtn = e.target.closest("[data-inbox-ai-reply]");
+    if (aiBtn) {
+      const gid = aiBtn.getAttribute("data-inbox-ai-reply");
+      const g = getState().groups?.find((x) => x.id === gid);
+      onAiReply?.(gid, g?.interactions?.[0]?.summary || "");
+      return;
+    }
     const btn = e.target.closest("[data-inbox-profile]");
     if (btn) onOpenProfile?.(btn.getAttribute("data-inbox-profile"));
   });

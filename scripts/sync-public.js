@@ -29,6 +29,7 @@ const rootFiles = [
   "group-import-wizard.js",
   "crm-full-ui.js",
   "crm-inbox-ui.js",
+  "ai-ui.js",
   "zalo-links.js",
 ];
 

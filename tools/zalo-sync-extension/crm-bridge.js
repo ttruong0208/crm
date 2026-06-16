@@ -15,7 +15,7 @@
   flag.style.display = "none";
   document.documentElement.appendChild(flag);
 
-  window.postMessage({ type: "zalo-crm-bridge-ready", version: "1.7.0" }, "*");
+  window.postMessage({ type: "zalo-crm-bridge-ready", version: "1.7.2" }, "*");
 
   window.addEventListener("message", (event) => {
     if (event.source !== window) return;
@@ -30,7 +30,7 @@
     if (data.type === "zalo-crm-set-sync" && data.syncToken) {
       chrome.storage.sync.set({
         syncToken: data.syncToken,
-        crmBaseUrl: data.crmBaseUrl || "http://localhost:3000",
+        crmBaseUrl: data.crmBaseUrl || (typeof ZALO_CRM_DEFAULT_URL !== "undefined" ? ZALO_CRM_DEFAULT_URL : "https://crm-alpha-henna-85.vercel.app"),
         enabled: true,
       });
       return;

@@ -96,14 +96,16 @@ async function sendAutoMessage(tabId, payload) {
 async function ensureCrmBridgeForUrl(tabId, url) {
   if (!tabId || !url) return;
   const stored = await chrome.storage.sync.get(["crmBaseUrl"]);
-  const base = String(stored.crmBaseUrl || "http://localhost:3000").replace(/\/$/, "");
+  const base = String(
+    typeof resolveCrmBaseUrl === "function" ? resolveCrmBaseUrl(stored.crmBaseUrl) : stored.crmBaseUrl || "https://crm-alpha-henna-85.vercel.app",
+  ).replace(/\/$/, "");
   if (!url.startsWith(base)) return;
   try {
     const ping = await chrome.tabs.sendMessage(tabId, { action: "crm-bridge-ping" }).catch(() => null);
     if (ping?.ok) return;
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["crm-bridge.js"],
+      files: ["extension-config.js", "crm-bridge.js"],
     });
   } catch {
     /* tab chưa sẵn sàng */
@@ -124,7 +126,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       if (payload.syncToken && !stored.syncToken) {
         await chrome.storage.sync.set({
           syncToken: payload.syncToken,
-          crmBaseUrl: payload.crmBaseUrl || stored.crmBaseUrl || "http://localhost:3000",
+          crmBaseUrl:
+            payload.crmBaseUrl ||
+            (typeof resolveCrmBaseUrl === "function"
+              ? resolveCrmBaseUrl(stored.crmBaseUrl)
+              : stored.crmBaseUrl || "https://crm-alpha-henna-85.vercel.app"),
           enabled: true,
         });
         stored.syncToken = payload.syncToken;

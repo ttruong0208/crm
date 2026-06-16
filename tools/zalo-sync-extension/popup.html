@@ -63,7 +63,7 @@
   <body>
     <strong>Zalo CRM</strong>
     <label>URL CRM</label>
-    <input id="crm-url" type="text" value="http://localhost:3000" />
+    <input id="crm-url" type="text" value="https://crm-alpha-henna-85.vercel.app" placeholder="https://crm-alpha-henna-85.vercel.app" />
     <label>Mã đồng bộ</label>
     <input id="sync-token" type="text" placeholder="Copy từ CRM" />
     <label><input type="checkbox" id="enabled" checked /> Tự đánh dấu đã gửi khi gửi tin</label>
@@ -75,6 +75,7 @@
       <br />Quay CRM → Import → <strong>Hiện nhóm vừa quét từ Zalo</strong> → Import.
     </p>
     <p id="msg"></p>
+    <script src="extension-config.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
