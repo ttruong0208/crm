@@ -1137,6 +1137,36 @@
     );
   }
 
+  function updateFloatingDock() {
+    let dock = document.getElementById("zalo-crm-dock");
+    if (!dock) {
+      dock = document.createElement("div");
+      dock.id = "zalo-crm-dock";
+      dock.style.cssText =
+        "position:fixed;bottom:20px;right:20px;z-index:2147483647;display:flex;flex-direction:column;align-items:flex-end;gap:8px;font:600 13px Inter,system-ui,sans-serif;pointer-events:none";
+      document.body.appendChild(dock);
+    }
+    const panelOpen = Boolean(document.getElementById("zalo-crm-sync-panel"));
+    dock.innerHTML = `
+      <button type="button" id="zalo-crm-dock-toggle" title="${panelOpen ? "Ẩn panel CRM" : "Mở panel CRM"}" style="
+        pointer-events:auto;
+        padding:10px 16px;
+        border-radius:999px;
+        border:none;
+        cursor:pointer;
+        font:inherit;
+        font-weight:700;
+        color:#fff;
+        background:${panelOpen ? "#dc2626" : "#2563eb"};
+        box-shadow:0 6px 20px rgba(0,0,0,.22);
+      ">${panelOpen ? "▲ Ẩn CRM" : "▼ Mở CRM"}</button>
+    `;
+    dock.querySelector("#zalo-crm-dock-toggle").onclick = () => {
+      if (panelOpen) setPanelHidden(true);
+      else setPanelHidden(false);
+    };
+  }
+
   function setPanelHidden(hidden) {
     const cfg = { ...loadConfig(), panelHidden: Boolean(hidden) };
     saveConfig(cfg);
@@ -1145,24 +1175,15 @@
     }
     if (hidden) {
       document.getElementById("zalo-crm-sync-panel")?.remove();
-      renderPanelToggle();
     } else {
-      document.getElementById("zalo-crm-panel-toggle")?.remove();
       renderPanel();
+      return;
     }
+    updateFloatingDock();
   }
 
   function renderPanelToggle() {
-    if (document.getElementById("zalo-crm-panel-toggle")) return;
-    const btn = document.createElement("button");
-    btn.id = "zalo-crm-panel-toggle";
-    btn.type = "button";
-    btn.title = "Mở cấu hình Zalo CRM";
-    btn.textContent = "CRM";
-    btn.style.cssText =
-      "position:fixed;bottom:16px;left:16px;z-index:99998;padding:8px 12px;border-radius:999px;border:none;background:#2563eb;color:#fff;font:600 12px Inter,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.35)";
-    btn.onclick = () => setPanelHidden(false);
-    document.body.appendChild(btn);
+    updateFloatingDock();
   }
 
   function renderPanel(options = {}) {
@@ -1174,12 +1195,12 @@
     panel = document.createElement("div");
     panel.id = panelId;
     panel.style.cssText =
-      "position:fixed;bottom:16px;left:16px;z-index:99999;background:#fff;border:1px solid #cbd5e1;padding:12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);font:13px Inter,sans-serif;max-width:300px;";
+      "position:fixed;bottom:64px;right:20px;z-index:2147483646;background:#fff;border:1px solid #cbd5e1;padding:12px;border-radius:12px;box-shadow:0 10px 32px rgba(0,0,0,.18);font:13px Inter,system-ui,sans-serif;max-width:300px;max-height:70vh;overflow:auto";
 
     panel.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px">
         <strong>Zalo CRM</strong>
-        <button type="button" id="zcs-close" title="Ẩn panel" style="border:none;background:#f1f5f9;color:#64748b;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:14px;line-height:1">✕</button>
+        <button type="button" id="zcs-close" title="Ẩn panel" style="border:none;background:#fee2e2;color:#b91c1c;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:700">▲ Ẩn</button>
       </div>
       <label style="display:block;font-size:11px;color:#64748b;margin-bottom:4px">URL CRM</label>
       <input id="zcs-crm-url" style="width:100%;margin-bottom:8px;padding:6px;box-sizing:border-box" value="${cfg.crmBaseUrl || (typeof ZALO_CRM_DEFAULT_URL !== "undefined" ? ZALO_CRM_DEFAULT_URL : "https://crm-alpha-henna-85.vercel.app")}" placeholder="https://crm-alpha-henna-85.vercel.app" />
@@ -1190,14 +1211,14 @@
       <label style="display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:12px">
         <input type="checkbox" id="zcs-enabled" ${cfg.enabled !== false ? "checked" : ""} /> Tự đánh dấu đã gửi khi gửi tin
       </label>
-      <button id="zcs-save" style="padding:6px 10px;margin-right:6px;cursor:pointer">Lưu cấu hình</button>
-      <button type="button" id="zcs-hide" style="padding:6px 10px;cursor:pointer;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px">Ẩn panel</button>
+      <button id="zcs-save" style="padding:8px 10px;margin-right:6px;cursor:pointer;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:600">Lưu cấu hình</button>
+      <button type="button" id="zcs-hide" style="padding:8px 10px;cursor:pointer;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;border-radius:6px;font-weight:700">▲ Ẩn CRM</button>
       <span id="zcs-status" style="display:block;font-size:11px;color:#64748b;margin-top:6px"></span>
-      <span style="display:block;font-size:10px;color:#94a3b8;margin-top:4px">v1.7.3 · Bấm ✕ hoặc «Ẩn panel» để thu gọn</span>
+      <span style="display:block;font-size:10px;color:#94a3b8;margin-top:4px">v1.7.4 · Nút đỏ góc phải dưới = ẩn/hiện</span>
     `;
 
-    document.getElementById("zalo-crm-panel-toggle")?.remove();
     document.body.appendChild(panel);
+    updateFloatingDock();
 
     const statusEl = panel.querySelector("#zcs-status");
 
@@ -1314,12 +1335,15 @@
     const cfg = loadConfig();
     bindSendListeners();
     startHeartbeat(cfg);
-    const forceShow = options.showPanel === true;
-    const shouldHide = cfg.panelHidden && !forceShow;
-    if (shouldHide) {
-      renderPanelToggle();
-    } else if (options.showPanel !== false) {
+    updateFloatingDock();
+    const mustSetup = !cfg.syncToken;
+    const forceOpen = options.showPanel === true;
+    const shouldOpen = forceOpen || (mustSetup && options.showPanel !== false);
+    if (shouldOpen) {
       renderPanel(options);
+    } else {
+      document.getElementById("zalo-crm-sync-panel")?.remove();
+      updateFloatingDock();
     }
     return {
       getActiveChatInfo,
@@ -1357,6 +1381,7 @@
     bindSendListeners,
     renderPanel,
     renderPanelToggle,
+    updateFloatingDock,
     setPanelHidden,
   };
 });

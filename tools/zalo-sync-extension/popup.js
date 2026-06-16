@@ -42,6 +42,22 @@ document.getElementById("save").onclick = async () => {
   setMsg("Đã lưu — mở chat.zalo.me, dán mã vào panel Zalo CRM, bấm Lưu cấu hình để kiểm tra.");
 };
 
+document.getElementById("toggle-panel").onclick = async () => {
+  const tabs = await chrome.tabs.query({ url: ["https://chat.zalo.me/*", "https://*.zalo.me/*"] });
+  const zaloTab = tabs.find((t) => t.url?.includes("chat.zalo.me")) || tabs[0];
+  if (!zaloTab?.id) {
+    setMsg("Chưa có tab Zalo — bấm «Mở chat.zalo.me» trước.", true);
+    return;
+  }
+  try {
+    const result = await chrome.tabs.sendMessage(zaloTab.id, { action: "toggle-panel" });
+    await chrome.tabs.update(zaloTab.id, { active: true });
+    setMsg(result?.hidden ? "Đã ẩn panel CRM trên Zalo." : "Đã mở panel CRM trên Zalo.");
+  } catch {
+    setMsg("Reload extension v1.7.4 rồi F5 tab Zalo.", true);
+  }
+};
+
 document.getElementById("open-panel").onclick = async () => {
   const tabs = await chrome.tabs.query({ url: ["https://chat.zalo.me/*", "https://*.zalo.me/*"] });
   const zaloTab = tabs.find((t) => t.url?.includes("chat.zalo.me")) || tabs[0];
