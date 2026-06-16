@@ -1,4 +1,4 @@
-const EXTENSION_VERSION = "1.7.8";
+const EXTENSION_VERSION = "1.8.0";
 const EXTENSION_ZIP_URL = "/downloads/zalo-crm-extension.zip";
 const EXTENSION_GUIDE_URL = "/extension-install.html";
 const EXTENSION_MODAL_SESSION_KEY = "crm_extension_modal_dismissed";

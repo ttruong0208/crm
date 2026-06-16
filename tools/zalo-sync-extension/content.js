@@ -36,7 +36,6 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (changes.enabled) cfg.enabled = changes.enabled.newValue !== false;
   if (changes.campaignId) cfg.campaignId = changes.campaignId.newValue || null;
   if (changes.panelHidden) cfg.panelHidden = changes.panelHidden.newValue === true;
-  if (changes.dockPos?.newValue) cfg.dockPos = changes.dockPos.newValue;
   ZaloCrmSync.saveConfig(cfg);
 });
 
@@ -60,7 +59,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     );
     sendResponse({
       ok: true,
-      version: "1.7.8",
+      version: "1.8.0",
       hasToken: Boolean(cfg.syncToken),
       loggedIn,
       url: location.href,
