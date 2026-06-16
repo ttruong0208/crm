@@ -60,7 +60,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     );
     sendResponse({
       ok: true,
-      version: "1.7.7",
+      version: "1.7.8",
       hasToken: Boolean(cfg.syncToken),
       loggedIn,
       url: location.href,
