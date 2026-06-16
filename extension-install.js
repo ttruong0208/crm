@@ -1,4 +1,4 @@
-const EXTENSION_VERSION = "1.7.2";
+const EXTENSION_VERSION = "1.7.3";
 const EXTENSION_ZIP_URL = "/downloads/zalo-crm-extension.zip";
 const EXTENSION_GUIDE_URL = "/extension-install.html";
 const EXTENSION_MODAL_SESSION_KEY = "crm_extension_modal_dismissed";
@@ -55,6 +55,7 @@ function buildExtensionConnectedStrip() {
     <div class="extension-connected-strip" role="status">
       <span aria-hidden="true">✓</span>
       <span>Extension Chrome đã kết nối CRM — có thể quét nhóm và Gửi Web.</span>
+      <a href="${EXTENSION_ZIP_URL}" download="${extensionDownloadFilename()}" class="secondary mini extension-download-btn">⬇ Tải lại extension</a>
       <button type="button" class="secondary mini" data-extension-open-sync>Mã sync</button>
     </div>
   `;
@@ -134,6 +135,11 @@ function hideExtensionInstallModal() {
 
 function initExtensionInstallUi() {
   mountExtensionBanners();
+  const topDl = document.getElementById("topbar-extension-download");
+  if (topDl) {
+    topDl.href = EXTENSION_ZIP_URL;
+    topDl.setAttribute("download", extensionDownloadFilename());
+  }
 
   const modal = document.getElementById("extension-install-modal");
   modal?.querySelector(".extension-install-modal-backdrop")?.addEventListener("click", hideExtensionInstallModal);

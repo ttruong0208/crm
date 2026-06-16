@@ -15,7 +15,7 @@
   flag.style.display = "none";
   document.documentElement.appendChild(flag);
 
-  window.postMessage({ type: "zalo-crm-bridge-ready", version: "1.7.2" }, "*");
+  window.postMessage({ type: "zalo-crm-bridge-ready", version: "1.7.3" }, "*");
 
   window.addEventListener("message", (event) => {
     if (event.source !== window) return;

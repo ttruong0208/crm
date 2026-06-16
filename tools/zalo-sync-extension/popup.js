@@ -42,6 +42,23 @@ document.getElementById("save").onclick = async () => {
   setMsg("Đã lưu — mở chat.zalo.me, dán mã vào panel Zalo CRM, bấm Lưu cấu hình để kiểm tra.");
 };
 
+document.getElementById("open-panel").onclick = async () => {
+  const tabs = await chrome.tabs.query({ url: ["https://chat.zalo.me/*", "https://*.zalo.me/*"] });
+  const zaloTab = tabs.find((t) => t.url?.includes("chat.zalo.me")) || tabs[0];
+  if (!zaloTab?.id) {
+    chrome.tabs.create({ url: "https://chat.zalo.me/" });
+    setMsg("Đã mở Zalo — bấm lại «Mở cấu hình» sau khi đăng nhập.");
+    return;
+  }
+  try {
+    await chrome.tabs.sendMessage(zaloTab.id, { action: "show-panel" });
+    await chrome.tabs.update(zaloTab.id, { active: true });
+    setMsg("Đã mở panel cấu hình trên tab Zalo.");
+  } catch {
+    setMsg("F5 tab chat.zalo.me rồi thử lại.", true);
+  }
+};
+
 document.getElementById("open-zalo").onclick = () => {
   chrome.tabs.create({ url: "https://chat.zalo.me/" });
   setMsg("Đã mở Zalo Web — đăng nhập xong bấm «Quét nhóm → gửi CRM».");

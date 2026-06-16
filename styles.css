@@ -1617,6 +1617,12 @@ body.auth-loading-open {
   font-weight: 700;
 }
 
+.topbar-extension-download {
+  text-decoration: none;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
 .extension-install-modal {
   position: fixed;
   inset: 0;

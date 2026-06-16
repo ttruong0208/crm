@@ -1137,6 +1137,34 @@
     );
   }
 
+  function setPanelHidden(hidden) {
+    const cfg = { ...loadConfig(), panelHidden: Boolean(hidden) };
+    saveConfig(cfg);
+    if (typeof chrome !== "undefined" && chrome.storage?.sync) {
+      chrome.storage.sync.set({ panelHidden: cfg.panelHidden });
+    }
+    if (hidden) {
+      document.getElementById("zalo-crm-sync-panel")?.remove();
+      renderPanelToggle();
+    } else {
+      document.getElementById("zalo-crm-panel-toggle")?.remove();
+      renderPanel();
+    }
+  }
+
+  function renderPanelToggle() {
+    if (document.getElementById("zalo-crm-panel-toggle")) return;
+    const btn = document.createElement("button");
+    btn.id = "zalo-crm-panel-toggle";
+    btn.type = "button";
+    btn.title = "Mở cấu hình Zalo CRM";
+    btn.textContent = "CRM";
+    btn.style.cssText =
+      "position:fixed;bottom:16px;left:16px;z-index:99998;padding:8px 12px;border-radius:999px;border:none;background:#2563eb;color:#fff;font:600 12px Inter,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.35)";
+    btn.onclick = () => setPanelHidden(false);
+    document.body.appendChild(btn);
+  }
+
   function renderPanel(options = {}) {
     const panelId = "zalo-crm-sync-panel";
     let panel = document.getElementById(panelId);
@@ -1149,7 +1177,10 @@
       "position:fixed;bottom:16px;left:16px;z-index:99999;background:#fff;border:1px solid #cbd5e1;padding:12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);font:13px Inter,sans-serif;max-width:300px;";
 
     panel.innerHTML = `
-      <strong style="display:block;margin-bottom:6px">Zalo CRM</strong>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px">
+        <strong>Zalo CRM</strong>
+        <button type="button" id="zcs-close" title="Ẩn panel" style="border:none;background:#f1f5f9;color:#64748b;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:14px;line-height:1">✕</button>
+      </div>
       <label style="display:block;font-size:11px;color:#64748b;margin-bottom:4px">URL CRM</label>
       <input id="zcs-crm-url" style="width:100%;margin-bottom:8px;padding:6px;box-sizing:border-box" value="${cfg.crmBaseUrl || (typeof ZALO_CRM_DEFAULT_URL !== "undefined" ? ZALO_CRM_DEFAULT_URL : "https://crm-alpha-henna-85.vercel.app")}" placeholder="https://crm-alpha-henna-85.vercel.app" />
       <label style="display:block;font-size:11px;color:#64748b;margin-bottom:4px">Mã đồng bộ (copy từ CRM)</label>
@@ -1160,12 +1191,18 @@
         <input type="checkbox" id="zcs-enabled" ${cfg.enabled !== false ? "checked" : ""} /> Tự đánh dấu đã gửi khi gửi tin
       </label>
       <button id="zcs-save" style="padding:6px 10px;margin-right:6px;cursor:pointer">Lưu cấu hình</button>
+      <button type="button" id="zcs-hide" style="padding:6px 10px;cursor:pointer;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px">Ẩn panel</button>
       <span id="zcs-status" style="display:block;font-size:11px;color:#64748b;margin-top:6px"></span>
+      <span style="display:block;font-size:10px;color:#94a3b8;margin-top:4px">v1.7.3 · Bấm ✕ hoặc «Ẩn panel» để thu gọn</span>
     `;
 
+    document.getElementById("zalo-crm-panel-toggle")?.remove();
     document.body.appendChild(panel);
 
     const statusEl = panel.querySelector("#zcs-status");
+
+    panel.querySelector("#zcs-close").onclick = () => setPanelHidden(true);
+    panel.querySelector("#zcs-hide").onclick = () => setPanelHidden(true);
 
     panel.querySelector("#zcs-save").onclick = async () => {
       const next = {
@@ -1196,6 +1233,7 @@
         statusEl.textContent = `✓ Đã lưu — CRM OK (${test.crmBase})`;
         statusEl.style.color = "#16a34a";
         startHeartbeat(next);
+        setTimeout(() => setPanelHidden(true), 1500);
       } catch (e) {
         statusEl.textContent = e.message || "Không kết nối được CRM";
         statusEl.style.color = "#dc2626";
@@ -1276,7 +1314,11 @@
     const cfg = loadConfig();
     bindSendListeners();
     startHeartbeat(cfg);
-    if (options.showPanel !== false) {
+    const forceShow = options.showPanel === true;
+    const shouldHide = cfg.panelHidden && !forceShow;
+    if (shouldHide) {
+      renderPanelToggle();
+    } else if (options.showPanel !== false) {
       renderPanel(options);
     }
     return {
@@ -1314,5 +1356,7 @@
     saveConfig,
     bindSendListeners,
     renderPanel,
+    renderPanelToggle,
+    setPanelHidden,
   };
 });

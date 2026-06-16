@@ -1,4 +1,4 @@
-chrome.storage.sync.get(["crmBaseUrl", "syncToken", "enabled", "campaignId"], (stored) => {
+chrome.storage.sync.get(["crmBaseUrl", "syncToken", "enabled", "campaignId", "panelHidden"], (stored) => {
   const base =
     typeof resolveCrmBaseUrl === "function"
       ? resolveCrmBaseUrl(stored.crmBaseUrl)
@@ -8,10 +8,12 @@ chrome.storage.sync.get(["crmBaseUrl", "syncToken", "enabled", "campaignId"], (s
     syncToken: stored.syncToken || "",
     enabled: stored.enabled !== false,
     campaignId: stored.campaignId || null,
+    panelHidden: stored.panelHidden === true,
   });
 
+  const needsSetup = !stored.syncToken;
   ZaloCrmSync.init({
-    showPanel: true,
+    showPanel: needsSetup || !stored.panelHidden,
     onSync(result, chat) {
       const status = document.getElementById("zcs-status");
       if (!status) return;
@@ -33,10 +35,21 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (changes.syncToken) cfg.syncToken = changes.syncToken.newValue;
   if (changes.enabled) cfg.enabled = changes.enabled.newValue !== false;
   if (changes.campaignId) cfg.campaignId = changes.campaignId.newValue || null;
+  if (changes.panelHidden) cfg.panelHidden = changes.panelHidden.newValue === true;
   ZaloCrmSync.saveConfig(cfg);
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.action === "show-panel") {
+    ZaloCrmSync.setPanelHidden(false);
+    sendResponse({ ok: true });
+    return true;
+  }
+  if (message?.action === "hide-panel") {
+    ZaloCrmSync.setPanelHidden(true);
+    sendResponse({ ok: true });
+    return true;
+  }
   if (message?.action === "ping") {
     const cfg = ZaloCrmSync.loadConfig();
     const loggedIn = Boolean(
@@ -45,7 +58,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     );
     sendResponse({
       ok: true,
-      version: "1.6.2",
+      version: "1.7.3",
       hasToken: Boolean(cfg.syncToken),
       loggedIn,
       url: location.href,
